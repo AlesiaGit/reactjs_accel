@@ -1,14 +1,14 @@
 {
   "files": {
     "main.css": "/reactjs_accel/static/css/main.e50a1a07.chunk.css",
-    "main.js": "/reactjs_accel/static/js/main.6d2de252.chunk.js",
-    "main.js.map": "/reactjs_accel/static/js/main.6d2de252.chunk.js.map",
+    "main.js": "/reactjs_accel/static/js/main.8fd2d94c.chunk.js",
+    "main.js.map": "/reactjs_accel/static/js/main.8fd2d94c.chunk.js.map",
     "runtime~main.js": "/reactjs_accel/static/js/runtime~main.dd179d6e.js",
     "runtime~main.js.map": "/reactjs_accel/static/js/runtime~main.dd179d6e.js.map",
     "static/js/2.38d2aef9.chunk.js": "/reactjs_accel/static/js/2.38d2aef9.chunk.js",
     "static/js/2.38d2aef9.chunk.js.map": "/reactjs_accel/static/js/2.38d2aef9.chunk.js.map",
     "index.html": "/reactjs_accel/index.html",
-    "precache-manifest.bf74c11951ad55af652110f9f3c6725e.js": "/reactjs_accel/precache-manifest.bf74c11951ad55af652110f9f3c6725e.js",
+    "precache-manifest.d847a76bd2b0d68da585c6612055796f.js": "/reactjs_accel/precache-manifest.d847a76bd2b0d68da585c6612055796f.js",
     "service-worker.js": "/reactjs_accel/service-worker.js",
     "static/css/main.e50a1a07.chunk.css.map": "/reactjs_accel/static/css/main.e50a1a07.chunk.css.map"
   }
