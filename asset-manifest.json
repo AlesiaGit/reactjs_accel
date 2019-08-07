@@ -1,16 +1,16 @@
 {
   "files": {
-    "main.css": "/reactjs_accel/static/css/main.e9e50098.chunk.css",
-    "main.js": "/reactjs_accel/static/js/main.036cb179.chunk.js",
-    "main.js.map": "/reactjs_accel/static/js/main.036cb179.chunk.js.map",
+    "main.css": "/reactjs_accel/static/css/main.87369311.chunk.css",
+    "main.js": "/reactjs_accel/static/js/main.aa7e18c9.chunk.js",
+    "main.js.map": "/reactjs_accel/static/js/main.aa7e18c9.chunk.js.map",
     "runtime~main.js": "/reactjs_accel/static/js/runtime~main.dd179d6e.js",
     "runtime~main.js.map": "/reactjs_accel/static/js/runtime~main.dd179d6e.js.map",
-    "static/js/2.9d795743.chunk.js": "/reactjs_accel/static/js/2.9d795743.chunk.js",
-    "static/js/2.9d795743.chunk.js.map": "/reactjs_accel/static/js/2.9d795743.chunk.js.map",
+    "static/js/2.2727a896.chunk.js": "/reactjs_accel/static/js/2.2727a896.chunk.js",
+    "static/js/2.2727a896.chunk.js.map": "/reactjs_accel/static/js/2.2727a896.chunk.js.map",
     "index.html": "/reactjs_accel/index.html",
-    "precache-manifest.e642db67d11197fb2cb504b55c32d570.js": "/reactjs_accel/precache-manifest.e642db67d11197fb2cb504b55c32d570.js",
+    "precache-manifest.d9298c89e38f9e7fdb8603a806d7f4cb.js": "/reactjs_accel/precache-manifest.d9298c89e38f9e7fdb8603a806d7f4cb.js",
     "service-worker.js": "/reactjs_accel/service-worker.js",
-    "static/css/main.e9e50098.chunk.css.map": "/reactjs_accel/static/css/main.e9e50098.chunk.css.map",
+    "static/css/main.87369311.chunk.css.map": "/reactjs_accel/static/css/main.87369311.chunk.css.map",
     "static/media/start.css": "/reactjs_accel/static/media/cover-road.3b46a15c.jpg"
   }
 }
