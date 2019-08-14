@@ -1,0 +1,102 @@
+html {
+	width: 100%;
+}
+
+body {
+    width: 100%;
+    margin: 0;
+    font-size: calc(2vh + 2vw);
+    font-family: "Roboto", sans-serif;
+    color: #404040;
+}
+
+.wrapper {
+	min-height: 100vh;
+	height: 100%;
+	width: 100%;
+	background-color: #f0f0f0;
+    position: relative;
+}
+
+.main {
+	height: 92.2vh;
+}
+
+.temp-button {
+	width: 60px;
+    height: 60px;
+    border: 2px solid grey;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    background-color: #e1e2e1;
+}
+
+
+.map {
+	height: 76.4vh;
+    overflow: hidden;
+    width: 100%;
+}
+
+.favorities-map {
+	height: 84.2vh;
+	display: flex;
+	justify-content: center; 
+	flex-direction: column;
+}
+
+.fav-list {
+	display: flex;
+    flex-direction: column;
+}
+
+.fav-item {
+	background-color: white;
+    margin: calc(1.4vh + 1.4vw);
+    margin-bottom: 0;
+    padding: calc(1.4vh + 1.4vw);
+    border-radius: calc(0.5vh + 0.5vw);
+    
+}
+
+.green {
+    border-left: #ffae02 4vw solid;
+}
+
+.red {
+    border-left: #e34929 4vw solid;
+}
+
+.fav-route {
+    font-size: calc(1.5vh + 1.5vw);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    margin-bottom: 0;
+    text-align: left;
+    font-weight: 500;
+}
+
+.fav-bumps-count {
+    text-align: left;
+    margin-top: calc(0.5vh + 0.5vw);
+    font-size: calc(1.3vh + 1.3vw);
+}
+
+.chart-view-btn {
+    position: absolute;
+    right: 0;
+    top: 4vh;
+    height: 6.4vh;
+    width: 30%;
+    background-color: #4c88b7;
+    border-radius: calc(0.7vh + 0.7vw) 0 0 calc(0.7vh + 0.7vw);
+    display: flex;
+    align-items: center;
+    text-indent: 5vw;
+    font-size: calc(1.4vh + 1.4vw);
+    color: #ffffff;
+
+}

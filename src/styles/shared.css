@@ -1,0 +1,143 @@
+.header {
+	height: 15.8vh;
+    background-color: #4c88b7;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-end;
+    box-shadow: 0px 1px 5px grey;
+}
+
+.header-menu {
+	display: flex;
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.header-left-menu {
+	display: flex;
+    align-items: flex-end;
+}
+
+.header-menu-icon {
+	height: 5vh;
+	width: 5vh;
+	background-size: 75%;
+	background-repeat: no-repeat;
+	background-position: 50% 50%;
+	margin-left: 5vw;
+}
+
+.back-arrow {
+	background-image: url("../images/back-arrow.png");
+}
+
+.burger-icon {
+	background-image: url("../images/burger-menu.png");
+}
+
+.settings-icon {
+	background-image: url("../images/dots-menu.png");
+	margin-left: 0;
+	margin-right: 3vw;
+}
+
+.page-title {
+	font-size: calc(1.6vh + 1.6vw);
+    color: #ffffff;
+    margin-left: 6vw;
+    line-height: 4.5vh;
+}
+
+.header-submenu {
+	height: 8vh;
+    width: 100%;
+    display: flex;
+    align-items: flex-end;
+}
+
+.header-submenu-tab {
+	background-color: #4c88b7;
+    color: #ffffff;
+    border-radius: 0;
+    text-transform: uppercase;
+    width: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: calc(1.4vh + 1.4vw);
+    border-bottom: 0.4vh solid #4c88b7;
+    line-height: 6vh;
+}
+
+.tab-active {
+	border-color: #ffffff;
+}
+
+.bottom-ruler-btn {
+	-webkit-appearance: none;
+	height: 7.8vh;
+	text-transform: uppercase;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: #ffffff;
+	font-weight: 500;
+	font-size: calc(1.6vh + 1.6vw);
+	text-decoration: none;
+	cursor: pointer;
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	width: 100%;
+	box-shadow: 0px -1px 5px grey;
+}
+
+.cover {
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+
+.cover-background {
+	background-color: rgba(0, 0, 0, 0.3);;
+	width: 100%;
+	height: 100%;
+}
+
+.drawer {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 100%;
+	width: 65vw;
+}
+
+.drawer-logo {
+	height: 20vh;
+    width: 100%;
+    background-image: url('../images/drawer-logo.png');
+    background-size: cover;
+}
+
+.drawer-body {
+	height: 80vh;
+	width: 100%;
+	background-color: #f7f6f7;
+}
+
+.drawer-item {
+	-webkit-appearance: none;
+	display: block;
+	padding-left: 14%;
+    padding-top: 17%;
+    font-size: calc(1.7vh + 1.7vw);
+    font-weight: 500;
+    color: #424242;
+    text-decoration: none;
+}
