@@ -1,14 +1,13 @@
 import React, { Component } from 'react';
-import '../../styles/report-bumps.css';
+//import '../../styles/report-bumps.css';
+import '../../styles/check-trip.css';
 
 import { db } from '../Firebase/index';
 import { GoogleApiWrapper, Polyline, Marker, Circle} from 'google-maps-react';
 
 import BumpsMap from '../Shared/bumps-map';
 //import FavoritiesMap from './favorities-map';
-import FavoritiesList from './favorities-list';
 import Car from '../Shared/car';
-import { NextStepButton } from '../Shared/index';
 import Bang from '../../images/bang.png';
 
 import * as helpers from '../../helpers/index';
@@ -28,7 +27,7 @@ class Main extends Component {
 
 	    this.state = {
 	    	isDataFetched: false, // обработка загрузки данных
-	    	isRecordingMode: false, 
+	    	//isRecordingMode: false, 
 	    	data: [],
 	    	currentLocation: {}, 
 	    	previousLocation: {}, 
@@ -112,15 +111,15 @@ class Main extends Component {
 	    });
 	}
 
-	toggleRecording = () => {
-		if (!this.state.isRecordingMode) {
-			this.startRecording();
-		} else {
-			this.stopRecording();
-		}
+	// toggleRecording = () => {
+	// 	if (!this.state.isRecordingMode) {
+	// 		this.startRecording();
+	// 	} else {
+	// 		this.stopRecording();
+	// 	}
 		
-		this.setState({isRecordingMode: !this.state.isRecordingMode});  
-	}
+	// 	this.setState({isRecordingMode: !this.state.isRecordingMode});  
+	// }
 
 	startRecording = () => {
 		this.setState({
@@ -275,53 +274,9 @@ class Main extends Component {
 	}
 
 	render() {
-		let { bumps, historicBumps, favorities, dimentions, isRecordingMode, currentLocation } = this.state;
+		let { bumps, historicBumps, favorities, dimentions, currentLocation } = this.state;
 		let google = this.props.google;
-		//let tripMap, trips = <div>No data</div>;
 
-		let historicBumpsMap = historicBumps.map((bump, index) => (
-			<Marker 
-				key={index} 
-				position={{lat: bump.lat, lng: bump.lng}} 
-				//icon={Bang}
-
-				//{{
-					//path: "M-4,0a4,4 0 1,0 8,0a4,4 0 1,0 -8,0",
-					//fillColor: "#763568",
-					//strokeColor: "#763568",
-	                //fillOpacity: 1.0,
-	                //scale: 0.8,
-	                //anchor: new google.maps.Point(0, 0)
-	            //}} 
-                />));
-
-		// let bumpsMap = bumps.map((bump, index) => (
-		// 	<Marker 
-		// 		key={index} 
-		// 		position={{lat: bump.lat, lng: bump.lng}} 
-		// 		icon = {{
-		// 			path: "M-4,0a4,4 0 1,0 8,0a4,4 0 1,0 -8,0",
-		// 			fillColor: "red",
-		// 			strokeColor: "red",
-	 //                fillOpacity: 1.0,
-	 //                scale: 1.2,
-	 //                anchor: new google.maps.Point(0, 0)
-	 //            }} 
-	 //            zIndex="1000"
-  //               />));
-		
-
-		if (this.props.isFavoritiesView) {
-			return (
-				<FavoritiesList 
-					favorities={favorities} 
-					selectedTrip={this.props.selectedTrip}
-					google={google} 
-					dimentions={dimentions}
-					onTripSelect={this.props.onTripSelect}
-				/>
-			)
-		}
 
 		return (
 			<div className="map">
@@ -330,7 +285,7 @@ class Main extends Component {
 					google={google}
 					updateLocationData={this.updateLocationData}
 					currentLocation={currentLocation}
-					isRecordingMode={isRecordingMode}
+					isRecordingMode={this.props.isRecordingMode}
 					onZoomChanged={this.onZoomChanged}		
 					dimentions={dimentions}
 					camelize={helpers.camelize}	
@@ -341,23 +296,8 @@ class Main extends Component {
 						angle={this.state.angle}
 						move={this.state.move}
 						resetMove={this.resetMove}
-						/>						
-					<Polyline
-						path={this.state.data}
-						strokeColor="#4D8FAC"
-						strokeOpacity={0.8}
-						strokeWeight={4} 
-						/>					
-					
+						/>
 				</BumpsMap>
-				<button onClick={this.sendBumpsToFirebase} style={{ position: 'absolute', top: '17vh', left: 0, height: '5vh'}}>Add bumps to map</button>
-				<button onClick={this.sendTripToFirebase} style={{ position: 'absolute', top: '26vh', left: 0, height: '5vh'}}>Save trip to firebase</button>
-				<NextStepButton 
-					color={!isRecordingMode ? "#757d75" : "#e34929"}
-					toggleButton={this.toggleRecording}
-					disableCondition={!this.state.isDataFetched}
-					text={isRecordingMode ? "Stop Recording" : "Start Recording"}
-					/>	
 			</div>
 		);
 	}

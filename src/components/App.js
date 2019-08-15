@@ -6,6 +6,7 @@ import { createBrowserHistory } from "history";
 
 import ReportBumps from './ReportBumps/index';
 //import FavoritiesMap from './ReportBumps/favorities-map';
+import CheckTrip from './CheckTrip/index';
 import Start from './Start/index';
 
 const customHistory = createBrowserHistory();
@@ -16,7 +17,7 @@ class App extends Component {
 		super(props);
 
 	    this.state = {
-	    	isGranted: false
+	    	current: "map"
 	    };
 	}
 
@@ -30,33 +31,25 @@ class App extends Component {
 		    window.history.pushState({ noBackExitsApp: true }, '')
 		  }
 		})
-
-		//ScreenOrientation.lock("portrait");
 	}
 
-	permissionGranted = () => {
-		this.setState({isGranted: true})
+	markSelection = e => {
+		this.setState({
+			current: e.currentTarget.id
+		})
 	}
 
 	render() {
-	 	//if (!this.state.isGranted) return (<Start permissionGranted={this.permissionGranted} />);
-
+		let current = this.state.current;
 
 	    return (
-		    <HashRouter history={customHistory}>
+		    <HashRouter history={customHistory} >
 		       	<Route exact path="/" component={Start} />
-				<Route exact path="/map" component={ReportBumps} />
+				<Route exact path="/map" component={() => <ReportBumps current={current} markSelection={this.markSelection} />} />
+				<Route exact path="/checktrip" component={() => <CheckTrip current={current} markSelection={this.markSelection} />} />
   			</HashRouter>
 	    );
 	}  
 }
 
 export default App;
-
-// export default GoogleApiWrapper({
-// 	apiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY
-// })(App);
-
-// <div className="App"> 
-//	<ReportBumps google={this.props.google} />
-//</div>

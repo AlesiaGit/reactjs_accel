@@ -4,7 +4,7 @@ import { HeaderMenu, HeaderSubmenu, Drawer } from '../Shared/index';
 import Main from './main';
 import * as helpers from '../../helpers/index';
 
-class ReportBumpsView extends Component {
+class ReportBumps extends Component {
 	constructor(props) {
 		super(props);
 
@@ -54,8 +54,8 @@ class ReportBumpsView extends Component {
 				<div className="main">
 					<div className="header">
 						<HeaderMenu 
-							title={this.state.selectedTrip} 
-							icon={this.state.selectedTrip} 
+							title={this.state.selectedTrip !== null ? "Back to list" : "Report a bump"} 
+							icon={this.state.selectedTrip !== null ? "back-arrow" : "burger-icon"} 
 							onMenuToggle={this.onMenuToggle} 
 							/>
 						<HeaderSubmenu 
@@ -76,14 +76,14 @@ class ReportBumpsView extends Component {
 				</div>
 				<div className="cover" style={{display: this.state.isDrawer ? "block" : "none"}}>
 					<div className="cover-background" ref="cover" onClick={this.onMenuToggle}  />
-					<Drawer onMenuToggle={this.onMenuToggle}/>
+					<Drawer current={this.props.current} markSelection={this.props.markSelection}/>
 				</div>
 			</div>
 		);
 	}
 }
 
-export default ReportBumpsView;
+export default ReportBumps;
 
 //<Main 
 	//isFavoritiesView={this.state.isFavoritiesView} 

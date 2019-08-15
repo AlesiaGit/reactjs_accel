@@ -19,7 +19,8 @@ body {
 }
 
 .main {
-	height: 92.2vh;
+	height: 100vh;
+    position: relative;
 }
 
 .temp-button {
@@ -35,13 +36,13 @@ body {
 
 
 .map {
-	height: 76.4vh;
+	height: 100vh;
     overflow: hidden;
     width: 100%;
 }
 
 .favorities-map {
-	height: 84.2vh;
+	height: 100vh;
 	display: flex;
 	justify-content: center; 
 	flex-direction: column;
@@ -50,6 +51,7 @@ body {
 .fav-list {
 	display: flex;
     flex-direction: column;
+    padding-top: 15.8vh;
 }
 
 .fav-item {
