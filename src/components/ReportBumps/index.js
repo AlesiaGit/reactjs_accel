@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
-import '../../styles/report-bumps.css';
-import { HeaderMenu, HeaderSubmenu, Drawer } from '../Shared/index';
-import Main from './main';
+import '../../styles/shared.css';
+import { HeaderMenu, HeaderSubmenu, Drawer, NextStepButton, Body } from '../Shared/index';
 import * as helpers from '../../helpers/index';
 
 class ReportBumps extends Component {
@@ -10,6 +9,7 @@ class ReportBumps extends Component {
 
 	    this.state = {
 	    	isFavoritiesView: false, 
+	    	isRecordingMode: false, 
 	    	selectedTrip: null,
 	    	isMapView: true, 
 	    	submenuOptions: ["Favorities View", "Map View"],
@@ -17,8 +17,6 @@ class ReportBumps extends Component {
 	    };
 
 	    this.cover = React.createRef();
-
-	    
 	}
 
 	onFavoritiesView = () => {
@@ -48,6 +46,10 @@ class ReportBumps extends Component {
 		}
 	}
 
+	toggleRecording = () => {
+		this.setState({isRecordingMode: !this.state.isRecordingMode});  
+	}
+
 	render() {
 		return (
 			<div className="wrapper">
@@ -67,12 +69,20 @@ class ReportBumps extends Component {
 							camelize={helpers.camelize}
 							/>
 					</div>
-					<Main 
-	isFavoritiesView={this.state.isFavoritiesView} 
-	selectedTrip={this.state.selectedTrip}
-	onTripSelect={this.onTripSelect}
-	google={this.props.google}
-	/>
+					<Body 
+						isFavoritiesView={this.state.isFavoritiesView} 
+						selectedTrip={this.state.selectedTrip}
+						onTripSelect={this.onTripSelect}
+						google={this.props.google}
+						isRecordingMode={this.state.isRecordingMode}
+						isCheckTripView={false}
+						/>
+					<NextStepButton 
+						color={!this.state.isRecordingMode ? "#757d75" : "#e34929"}
+						toggleButton={this.toggleRecording}
+						disableCondition={!this.state.isDataFetched}
+						text={this.state.isRecordingMode ? "Stop Recording" : "Start Recording"}
+						/>	
 				</div>
 				<div className="cover" style={{display: this.state.isDrawer ? "block" : "none"}}>
 					<div className="cover-background" ref="cover" onClick={this.onMenuToggle}  />

@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { GoogleApiWrapper, Circle, Polyline } from 'google-maps-react';
 
 class FavoritiesMap extends Component {
 	constructor(props) {
@@ -89,7 +88,3 @@ class FavoritiesMap extends Component {
 }
 
 export default FavoritiesMap;
-
-// export default GoogleApiWrapper({
-// 	apiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY
-// })(FavoritiesMap);

@@ -1,23 +1,24 @@
 .search-menu {
-	height: 15vh;
+	height: 17vh;
     background-color: #ffffff;
     width: 100vw;
     display: flex;
-    align-items: flex-end;
+    align-items: center;
     padding-bottom: 2vh;
 }
 
 .from-to-icon {
 	height: 13vh;
-	width: 12vh;
+	width: 13vh;
 	background-image: url('../images/from-to-icon.png');
 	background-size: 100%;
     background-repeat: no-repeat;
     background-position: 50% 50%;
+    margin-top: 1vh;
 }
 
 .search-form {
-	margin-bottom: 2vh;
+	margin-bottom: 3vh;
     width: 100%;
 }
 
@@ -25,8 +26,7 @@
 	border: none;
     width: 90%;
     border-bottom: #d7d7d7 1px solid;
-    height: 4vh;
-    margin-top: 1vh;
+    margin-top: 1.5vh;
     outline: none;
     background-image: url('../images/search-icon.png');
 	background-position: 98% 50%;
@@ -35,5 +35,5 @@
     font-size: calc(1.7vh + 1.7vw);
     font-family: "Roboto", sans-serif;
     color: #404040;
-    height: 4vh;
+    height: 5vh;
 }

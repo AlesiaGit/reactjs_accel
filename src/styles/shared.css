@@ -1,3 +1,46 @@
+html {
+	width: 100%;
+}
+
+body {
+    width: 100%;
+    margin: 0;
+    font-size: calc(2vh + 2vw);
+    font-family: "Roboto", sans-serif;
+    color: #404040;
+}
+
+.wrapper {
+	min-height: 100vh;
+	height: 100%;
+	width: 100%;
+	background-color: #f0f0f0;
+    position: relative;
+}
+
+.main {
+	height: 100vh;
+    position: relative;
+}
+
+.temp-button {
+	width: 60px;
+    height: 60px;
+    border: 2px solid grey;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    background-color: #e1e2e1;
+}
+
+
+.map {
+	height: 100vh;
+    overflow: hidden;
+    width: 100%;
+}
+
 .header {
     background-color: #4c88b7;
     display: flex;

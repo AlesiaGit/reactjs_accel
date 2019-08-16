@@ -1,10 +1,7 @@
 import React, { Component } from 'react';
-import '../../styles/report-bumps.css';
-import { HeaderMenu, HeaderSubmenu, Drawer, NextStepButton } from '../Shared/index';
-
-import Main from './main';
+import '../../styles/check-trip.css';
+import { HeaderMenu, Drawer, NextStepButton, Body } from '../Shared/index';
 import SearchMenu from './search-menu';
-import * as helpers from '../../helpers/index';
 
 class CheckTrip extends Component {
 	constructor(props) {
@@ -12,24 +9,39 @@ class CheckTrip extends Component {
 
 	    this.state = {
 	    	isDrawer: false,
-	    	isRecordingMode: false
+	    	isSearchMode: true,
+	    	isGuidanceMode: false,
+	    	text: "Build a route",
+	    	color: "#fbad19",
+	    	start: "",
+	    	end: ""
 	    };
-
-	    
-
-	    this.cover = React.createRef();
 	}
 
 	onMenuToggle = () => {
 		this.setState({ isDrawer: !this.state.isDrawer })
 	}
 
-	toggleRecording = () => {
-		this.setState({isRecordingMode: !this.state.isRecordingMode});  
+	toggleNextStepButton = () => {
+		let { isSearchMode, isGuidanceMode } = this.state;
+		if (isSearchMode) return this.setState({ isSearchMode: false, isGuidanceMode: true, text: "Start Guidance", color:  "#757d75" });
+		if (isGuidanceMode) return this.setState({ isGuidanceMode: false, isSearchMode: false, text: "Stop Guidance", color: "#e34929" })
+		
+		this.setState({ isSearchMode: true, text: "Build a route", color: "#fbad19" })
+	}
+
+	handleChange = e => {
+		let { name, value } = e.target;
+
+		this.setState({
+			[name]: value
+		});
 	}
 
 	render() {
-		let { isRecordingMode, isDrawer } = this.state;
+		let { text, color, isDrawer, isSearchMode, start, end } = this.state;
+		let drawerDisplay = isDrawer ? "block" : "none";
+
 		return (
 			<div className="wrapper">
 				<div className="main">
@@ -38,18 +50,24 @@ class CheckTrip extends Component {
 							title={"Check your trip"} 
 							icon={"burger-icon"} 
 							onMenuToggle={this.onMenuToggle} />
-						<SearchMenu />
+						<SearchMenu handleChange={this.handleChange} />
 					</div>
-					<Main isRecordingMode={isRecordingMode} />
+					<Body 
+						isSearchMode={isSearchMode} 
+						start={start} 
+						end={end} 
+						isCheckTripView={true}
+						/>
 					<NextStepButton 
-						color={!isRecordingMode ? "#fbad19" : "#757d75"} // #e34929
-						toggleButton={this.toggleRecording}
-						text={isRecordingMode ? "Start Guidance" : "Search"}
-						/>	
+						color={color} 
+						toggleButton={this.toggleNextStepButton}
+						text={text}	/>	
 				</div>
-				<div className="cover" style={{display: isDrawer ? "block" : "none"}}>
-					<div className="cover-background" ref="cover" onClick={this.onMenuToggle}  />
-					<Drawer current={this.props.current} markSelection={this.props.markSelection} />
+				<div className="cover" style={{display: drawerDisplay}}>
+					<div className="cover-background" onClick={this.onMenuToggle}  />
+					<Drawer 
+						current={this.props.current} 
+						markSelection={this.props.markSelection} />
 				</div>
 			</div> 
 		);

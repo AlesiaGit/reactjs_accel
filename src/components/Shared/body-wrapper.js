@@ -1,16 +1,12 @@
 import React, { Component } from 'react';
 import '../../styles/report-bumps.css';
+import '../../styles/check-trip.css';
+import '../../styles/shared.css';
 
 import { db } from '../Firebase/index';
 import { GoogleApiWrapper, Polyline, Marker, Circle} from 'google-maps-react';
-
-import BumpsMap from '../Shared/bumps-map';
-//import FavoritiesMap from './favorities-map';
-import FavoritiesList from './favorities-list';
-import Car from '../Shared/car';
-import { NextStepButton } from '../Shared/index';
-import Bang from '../../images/bang.png';
-
+import { BumpsMap, Car } from './index';
+import FavoritiesList from '../ReportBumps/favorities-list';
 import * as helpers from '../../helpers/index';
 
 
@@ -22,81 +18,52 @@ const NAVIGATOR_OPTIONS = {
 	maximumAge: 0
 };
 
-class Main extends Component {
+class Body extends Component {
 	constructor(props) {
 		super(props);
 
 	    this.state = {
-	    	isDataFetched: false, // обработка загрузки данных
-	    	isRecordingMode: false, 
-	    	data: [],
+	    	path: [],
 	    	currentLocation: {}, 
 	    	previousLocation: {}, 
 	    	acceleration: {prev: { x: 0, y: 0, z: 0}, average: 0, max: 0, ticks: 0}, 
-	    	//context: null,
 	    	zoom: 16, 
 	    	angle: 0, 
 	    	move: 0, 
 	    	tripdistance: 0,
-	    	dimentions: {
-	    		height: window.innerHeight,// * 0.842, //0.764
-	    		width: window.innerWidth
-	    	},
+	    	dimentions: { height: window.innerHeight, width: window.innerWidth },
 	    	favorities: JSON.parse(localStorage.getItem("favorities")) || [], //заменить на данные с Firestore
 	    	bumps: [],
-	    	historicBumps: []
+	    	allBumps: []
 	    };
 
 	    this.canvas = React.createRef();
 	    this.mymap = React.createRef();
 	    this.mymarker = React.createRef();
-
-
 	}
 
 	componentDidMount = () => {
-		//const canvas = this.canvas.current;
-		//this.setState({ context: canvas.getContext('2d') });
-
-	 // 	var data;
-		// db.collection("coverage").get().then(querySnapshot => {
-		//     querySnapshot.forEach(function(doc) {
-		//     	if (doc.data().data) {
-		//     		data = JSON.parse(doc.data().data);
-		//     	} else {
-		//     		data = [];
-		//     	}
-
-		//     });
-		// }).then(() => {
-		// 	this.setState({ 
-		// 		context: canvas.getContext('2d'),
-		// 		isDataFetched: true,
-	 //  			data 
-	 //  		}, () => console.log(this.state.data));
-		// });
-
 		var docRef = db.collection('limit').doc('result');
 		docRef.get().then(doc =>{
 		    if (doc.exists) {
 		        return doc.data().data;
 		    }
-		}).then(data => {
-			this.setState({historicBumps: data})
+		}).then(allBumps => {
+			this.setState({allBumps})
 		})
 
-
-		this.setState({ // убрать при подключении Firestore
-			//context: canvas.getContext('2d'),
-			isDataFetched: true,
-			data: [] //set test for testing purposes
-		});
-
 		window.addEventListener('resize', this.updateWindowDimensions);
+
 	}
 
 	componentDidUpdate = (prevProps, prevState) => {
-	   //
+	   	if (prevProps.isRecordingMode !== this.props.isRecordingMode) {
+		   	if (this.props.isRecordingMode === true) {
+				this.startRecording();
+			} else {
+				this.stopRecording();
+			}
+	   	}
 	}
 
 	componentWillUnmount = () => {
@@ -104,27 +71,17 @@ class Main extends Component {
 	}
 
 	updateWindowDimensions = () => {
-	  this.setState({ 
-	  	dimentions: {
-	    		height: window.innerHeight,// * 0.764,
+	  	this.setState({ 
+	  		dimentions: {
+	    		height: window.innerHeight,
 	    		width: window.innerWidth
 	    	} 
 	    });
 	}
 
-	toggleRecording = () => {
-		if (!this.state.isRecordingMode) {
-			this.startRecording();
-		} else {
-			this.stopRecording();
-		}
-		
-		this.setState({isRecordingMode: !this.state.isRecordingMode});  
-	}
-
 	startRecording = () => {
 		this.setState({
-			data: [],
+			path: [],
 			bumps: [],
 			tripdistance: 0
 		});
@@ -155,14 +112,12 @@ class Main extends Component {
 			let az = z - prev.z;
 			let curr = Math.pow((ax * ax + ay * ay + az * az), 1 / 3); //current level of acceleration with existing phone position
 			
-			//if (curr > average * 1.3 && average !== 0) {
 			if (curr > 2.829226039) {
 				this.setState({
 					bumps: (bumps.length === 0 || !helpers.compare(bumps[bumps.length - 1], {lat, lng})) ? [...bumps, {lat, lng}] : bumps,
 				});
 			}
 
-			//average = (average * ticks + curr )/ ++ticks;
 			max = max > curr ? max : curr;
 
 			this.setState({acceleration: {prev: { x, y, z }, average, max, ticks}})
@@ -171,7 +126,7 @@ class Main extends Component {
 
 	updateLocationData = location => {
 		var prev = this.state.currentLocation;
-		let data = this.state.data;
+		let path = this.state.path;
 
 		var lat = location.coords.latitude;
 		var lng = location.coords.longitude;
@@ -185,7 +140,7 @@ class Main extends Component {
 		this.setState({	
 			previousLocation: prev,
 			currentLocation: { lat,	lng, speed,	timestamp },
-			data: (data.length === 0 || !helpers.compare(data[data.length - 1], {lat, lng})) ? [...this.state.data, {lat, lng}] : data,
+			path: (path.length === 0 || !helpers.compare(path[path.length - 1], {lat, lng})) ? [...this.state.path, {lat, lng}] : path,
 			angle: (Math.abs(angle - this.state.angle) > 22) ? angle : this.state.angle,
 			move: this.state.move + distance,
 			tripdistance: this.state.tripdistance + distance / 1000
@@ -215,19 +170,11 @@ class Main extends Component {
 		window.removeEventListener("devicemotion", this.updateAccelerationData);
 
 		this.updateFavoritiesData();
-		
-		//db.collection("coverage").doc(topleft).set({data: JSON.stringify(this.state.data)});
-
-		// docRef.get().then(function(doc) {
-		//     if (doc.exists) {
-		//         console.log("Document data:", doc.data());
-		//     }
-		// });
 	}
 
 	updateFavoritiesData = () => {
 		let { favorities, bumps, tripdistance } = this.state;
-		let path = this.state.data;
+		let path = this.state.path;
 		let bounds = helpers.getBounds(path);
 		let center = helpers.getCenter(bounds);
 		let { ne, sw } = bounds;
@@ -263,63 +210,59 @@ class Main extends Component {
 		.then(doc => {
 		    if (doc.exists) return doc.data().data;
 		})
-		.then(data => docRef.set({data: data.concat(bumps)}));
-		//docRef.set({data: []});
+		.then(allBumps => docRef.set({data: allBumps.concat(bumps)}));
 	}
 
 	sendTripToFirebase = () => {
 		let path = db.collection('trip').doc('path');
-		path.set({path: this.state.data});
+		path.set({path: this.state.path});
 		let bumps = db.collection('trip').doc('bumps');
 		bumps.set({bumps: this.state.bumps});
 	}
 
 	render() {
-		let { bumps, historicBumps, favorities, dimentions, isRecordingMode, currentLocation } = this.state;
-		let google = this.props.google;
-		//let tripMap, trips = <div>No data</div>;
+		let { bumps, angle, move, path, allBumps, favorities, dimentions, currentLocation } = this.state;
+		let { google, isSearchMode, start, end, isFavoritiesView, isCheckTripView, isRecordingMode, selectedTrip } = this.props;
 
-		let historicBumpsMap = historicBumps.map((bump, index) => (
-			<Marker 
-				key={index} 
-				position={{lat: bump.lat, lng: bump.lng}} 
-				//icon={Bang}
-
-				//{{
-					//path: "M-4,0a4,4 0 1,0 8,0a4,4 0 1,0 -8,0",
-					//fillColor: "#763568",
-					//strokeColor: "#763568",
-	                //fillOpacity: 1.0,
-	                //scale: 0.8,
-	                //anchor: new google.maps.Point(0, 0)
-	            //}} 
-                />));
-
-		// let bumpsMap = bumps.map((bump, index) => (
-		// 	<Marker 
-		// 		key={index} 
-		// 		position={{lat: bump.lat, lng: bump.lng}} 
-		// 		icon = {{
-		// 			path: "M-4,0a4,4 0 1,0 8,0a4,4 0 1,0 -8,0",
-		// 			fillColor: "red",
-		// 			strokeColor: "red",
-	 //                fillOpacity: 1.0,
-	 //                scale: 1.2,
-	 //                anchor: new google.maps.Point(0, 0)
-	 //            }} 
-	 //            zIndex="1000"
-  //               />));
 		
+		if (isCheckTripView) {
+			return (
+				<div className="map">
+					<BumpsMap 
+						centerAroundCurrentLocation
+						google={google}
+						updateLocationData={this.updateLocationData}
+						currentLocation={currentLocation}
+						isRecordingMode={isRecordingMode}
+						onZoomChanged={this.onZoomChanged}		
+						dimentions={dimentions}
+						camelize={helpers.camelize}	
+						bumps={bumps}
+						allBumps={allBumps}
+						isSearchMode={isSearchMode} 
+						start={start} 
+						end={end}
+						>
+						<Car 
+							angle={angle}
+							move={move}
+							resetMove={this.resetMove}
+							/>
+					</BumpsMap>
+				</div>
+			)
+		}
 
-		if (this.props.isFavoritiesView) {
+
+		if (isFavoritiesView) {
 			return (
 				<FavoritiesList 
 					favorities={favorities} 
-					selectedTrip={this.props.selectedTrip}
+					selectedTrip={selectedTrip}
 					google={google} 
 					dimentions={dimentions}
 					onTripSelect={this.props.onTripSelect}
-				/>
+					/>
 			)
 		}
 
@@ -334,52 +277,28 @@ class Main extends Component {
 					onZoomChanged={this.onZoomChanged}		
 					dimentions={dimentions}
 					camelize={helpers.camelize}	
-					bumps={this.state.bumps}
-					historicBumps={this.state.historicBumps}
+					bumps={bumps}
+					allBumps={allBumps}
 					>
 					<Car 
-						angle={this.state.angle}
-						move={this.state.move}
+						angle={angle}
+						move={move}
 						resetMove={this.resetMove}
-						/>						
+						/>	
 					<Polyline
-						path={this.state.data}
-						strokeColor="#4D8FAC"
-						strokeOpacity={0.8}
-						strokeWeight={4} 
-						/>					
-					
+					path={path}
+					strokeColor="#4D8FAC"
+					strokeOpacity={0.8}
+					strokeWeight={4} 
+					/>					
 				</BumpsMap>
 				<button onClick={this.sendBumpsToFirebase} style={{ position: 'absolute', top: '17vh', left: 0, height: '5vh'}}>Add bumps to map</button>
 				<button onClick={this.sendTripToFirebase} style={{ position: 'absolute', top: '26vh', left: 0, height: '5vh'}}>Save trip to firebase</button>
-				<NextStepButton 
-					color={!isRecordingMode ? "#757d75" : "#e34929"}
-					toggleButton={this.toggleRecording}
-					disableCondition={!this.state.isDataFetched}
-					text={isRecordingMode ? "Stop Recording" : "Start Recording"}
-					/>	
 			</div>
 		);
 	}
 }
 
-//export default Main;
-
- export default GoogleApiWrapper({
+export default GoogleApiWrapper({
  	apiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY
- })(Main);
-
-
- //<Bumps bumps={this.state.bumps} />
-//				{historicBumpsMap}
-//{historicBumpsMap}
- // {bumpsMap}
-// <div style={{
-// 	position: 'absolute',
-//     top: '17vh',
-//     left: 0,
-//     width: '100%',
-//     backgroundColor: '#ffffff'}}
-//   	>
-//     av: {acceleration.average.toFixed(2)}, max:{acceleration.max.toFixed(2)}, ticks:{acceleration.ticks}
-// </div>
+})(Body);
