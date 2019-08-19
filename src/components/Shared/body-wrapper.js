@@ -64,6 +64,14 @@ class Body extends Component {
 				this.stopRecording();
 			}
 	   	}
+
+	   	if (prevProps.isGuidanceMode !== this.props.isGuidanceMode) {
+		   	if (this.props.isGuidanceMode === true) {
+				this.startRecording();
+			} else {
+				this.stopRecording();
+			}
+	   	}
 	}
 
 	componentWillUnmount = () => {
@@ -222,7 +230,7 @@ class Body extends Component {
 
 	render() {
 		let { bumps, angle, move, path, allBumps, favorities, dimentions, currentLocation } = this.state;
-		let { google, isSearchMode, start, end, isFavoritiesView, isCheckTripView, isRecordingMode, selectedTrip } = this.props;
+		let { google, isSearchMode, start, end, isFavoritiesView, isCheckTripView, isRecordingMode, selectedTrip, isGuidanceMode } = this.props;
 
 		
 		if (isCheckTripView) {
@@ -233,7 +241,7 @@ class Body extends Component {
 						google={google}
 						updateLocationData={this.updateLocationData}
 						currentLocation={currentLocation}
-						isRecordingMode={isRecordingMode}
+						isRecordingMode={isGuidanceMode}
 						onZoomChanged={this.onZoomChanged}		
 						dimentions={dimentions}
 						camelize={helpers.camelize}	
@@ -241,14 +249,13 @@ class Body extends Component {
 						allBumps={allBumps}
 						isSearchMode={isSearchMode} 
 						start={start} 
-						end={end}
-						>
-						<Car 
-							angle={angle}
-							move={move}
-							resetMove={this.resetMove}
-							/>
-					</BumpsMap>
+						end={end} >
+					<Car 
+						angle={angle}
+						move={move}
+						resetMove={this.resetMove}
+						/>
+						</BumpsMap>	
 				</div>
 			)
 		}
@@ -286,11 +293,11 @@ class Body extends Component {
 						resetMove={this.resetMove}
 						/>	
 					<Polyline
-					path={path}
-					strokeColor="#4D8FAC"
-					strokeOpacity={0.8}
-					strokeWeight={4} 
-					/>					
+						path={path}
+						strokeColor="#4D8FAC"
+						strokeOpacity={0.8}
+						strokeWeight={4} 
+						/>					
 				</BumpsMap>
 				<button onClick={this.sendBumpsToFirebase} style={{ position: 'absolute', top: '17vh', left: 0, height: '5vh'}}>Add bumps to map</button>
 				<button onClick={this.sendTripToFirebase} style={{ position: 'absolute', top: '26vh', left: 0, height: '5vh'}}>Save trip to firebase</button>

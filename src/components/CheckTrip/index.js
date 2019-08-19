@@ -22,25 +22,31 @@ class CheckTrip extends Component {
 		this.setState({ isDrawer: !this.state.isDrawer })
 	}
 
-	toggleNextStepButton = () => {
+	onNextStepButtonToggle = () => {
 		let { isSearchMode, isGuidanceMode } = this.state;
-		if (isSearchMode) return this.setState({ isSearchMode: false, isGuidanceMode: true, text: "Start Guidance", color:  "#757d75" });
-		if (isGuidanceMode) return this.setState({ isGuidanceMode: false, isSearchMode: false, text: "Stop Guidance", color: "#e34929" })
-		
-		this.setState({ isSearchMode: true, text: "Build a route", color: "#fbad19" })
+		if (isSearchMode) return this.setState({ isSearchMode: false, isGuidanceMode: false, text: "Start Guidance", color:  "#757d75" });
+		if (!isGuidanceMode && !isSearchMode) return this.setState({ isSearchMode: false, isGuidanceMode: true, text: "Stop Guidance", color: "#e34929" })
+		if (isGuidanceMode && !isSearchMode) return this.setState({ isSearchMode: true, isGuidanceMode: false, text: "Build a route", color: "#fbad19" })
+	}
+
+	onSearchButtonToggle = () => {
+		this.setState({ isSearchMode: false, isGuidanceMode: true}, () => this.onNextStepButtonToggle())
 	}
 
 	handleChange = e => {
 		let { name, value } = e.target;
 
-		this.setState({
-			[name]: value
-		});
+		this.setState({	[name]: value });
+	}
+
+	clearSearch = item => {
+		this.setState({ [item]: "" });
 	}
 
 	render() {
-		let { text, color, isDrawer, isSearchMode, start, end } = this.state;
+		let { text, color, isDrawer, isSearchMode, isGuidanceMode, start, end } = this.state;
 		let drawerDisplay = isDrawer ? "block" : "none";
+		let searchBtnDisplay = (!isSearchMode && !isGuidanceMode) ? "flex" : "none";
 
 		return (
 			<div className="wrapper">
@@ -50,17 +56,27 @@ class CheckTrip extends Component {
 							title={"Check your trip"} 
 							icon={"burger-icon"} 
 							onMenuToggle={this.onMenuToggle} />
-						<SearchMenu handleChange={this.handleChange} />
+						<SearchMenu 
+							handleChange={this.handleChange} 
+							clearSearch={this.clearSearch}
+							start={start}
+							end={end}
+							isSearchMode={isSearchMode} 
+							/>
+						<div className="directions-btn" 
+							style={{display: searchBtnDisplay}} 
+							onClick={this.onSearchButtonToggle} />
 					</div>
 					<Body 
 						isSearchMode={isSearchMode} 
+						isGuidanceMode={isGuidanceMode}
 						start={start} 
 						end={end} 
 						isCheckTripView={true}
 						/>
 					<NextStepButton 
 						color={color} 
-						toggleButton={this.toggleNextStepButton}
+						toggleButton={this.onNextStepButtonToggle}
 						text={text}	/>	
 				</div>
 				<div className="cover" style={{display: drawerDisplay}}>

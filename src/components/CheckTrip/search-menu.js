@@ -2,17 +2,24 @@ import React, { Component } from 'react';
 
 class SearchMenu extends Component {
 	render() {
+		let displaySearch = (this.props.isSearchMode) ? "flex" : "none";
 		return (
-			<div className="search-menu">
+			<div className="search-menu" style={{display: displaySearch}} >
 				<div className="from-to-icon"></div>
 				<div className="search-form">
 					{["start", "end"].map(item => (
-						<input 
-							key={item}
-							type="text" 
-							name={item} 
-							className="search-input" 
-							onChange={e => this.props.handleChange(e)} />
+						<div key={item} className="search-input-wrapper">
+							<input 
+								type="text" 
+								name={item} 
+								value={this.props[item]}
+								className="search-input" 
+								placeholder={(item === "start") ? "(Мое местоположение)" : ""}
+								onChange={e => this.props.handleChange(e)} />
+							<div 
+								className="search-cancel-btn"
+								onClick={() => this.props.clearSearch(item)} />
+						</div>
 						))}
 				</div>
 			</div>

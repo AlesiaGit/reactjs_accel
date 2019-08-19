@@ -47,36 +47,44 @@ class BumpsMap extends Component {
 		}
 
 		if (prevProps.bumps !== this.props.bumps) {
-			this.setBumpsOnMap(this.props.bumps, this.tripBumps, "red", 1.2);
+			this.setBumpsOnMap(this.props.bumps, this.tripBumps, "#fbad19", 1.4);
 		}
 
 		if (prevProps.allBumps !== this.props.allBumps) {
-			this.setBumpsOnMap(this.props.allBumps, this.databaseBumps, "purple", 0.8);
+			this.setBumpsOnMap(this.props.allBumps, this.databaseBumps, "#e34929", 0.8);
 		}
 
 		if (prevProps.isSearchMode !== this.props.isSearchMode && this.props.isSearchMode === false) {
-			this.buildRoute([this.props.start, this.props.end]);
+			let { start, end, google } = this.props;
+
+			if (start !== "") return this.buildRoute({start, end});
+			navigator.geolocation.getCurrentPosition((pos) => this.buildRoute({start: new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude), end}));
 		}
+
+		// if (prevProps.isSearchMode !== this.props.isSearchMode && this.props.isSearchMode === true) {
+		// 	this.clearRoute();
+		// }
 	}
 
 	buildRoute = endpoints => {
-		this.convertAddressToCoordinates(endpoints).then(addresses => {
-			let maps = this.props.google.maps;
-			let directionsService = new maps.DirectionsService();
-  			let directionsDisplay = new maps.DirectionsRenderer();
-  			directionsDisplay.setMap(this.map);
+		let maps = this.props.google.maps;
+		this.directionsDisplay.setMap(this.map);
 
-  			var request = {
-				origin: addresses.start,
-				destination: addresses.end,
-				travelMode: 'DRIVING'
-			};
+		var request = {
+			origin: endpoints.start,
+			destination: endpoints.end,
+			travelMode: 'DRIVING'
+		};
 
-			directionsService.route(request, (response, status) => {
-				if (status === 'OK') directionsDisplay.setDirections(response);
-			});
-		})
+		this.directionsService.route(request, (response, status) => {
+			console.log(maps.geometry.encoding.decodePath(response.routes[0].overview_polyline[0][0]))
+			if (status === 'OK') this.directionsDisplay.setDirections(response);
+		});
 	}
+
+	// clearRoute = () => {
+	// 	if (this.map && this.directionsDisplay) this.directionsDisplay.setMap(null);
+	// }
 
 	convertAddressToCoordinates = addresses => {
 		return new Promise ((resolve, reject) => {
@@ -115,12 +123,17 @@ class BumpsMap extends Component {
 
 			this.map = new maps.Map(this.mymap.current, mapConfig);
 
+			if (this.map) {
+				this.directionsService = new maps.DirectionsService();
+				this.directionsDisplay = new maps.DirectionsRenderer();
+			}
+
 			const evtNames = ['click', 'dragend', 'zoom_changed'];
 			evtNames.forEach(e => this.map.addListener(e, this.handleEvent(e)));
 
 			maps.event.trigger(this.map, 'ready');
 
-			if (this.map) this.setBumpsOnMap(this.props.allBumps, this.databaseBumps, "purple", 0.8);
+			if (this.map) this.setBumpsOnMap(this.props.allBumps, this.databaseBumps, "#e34929", 0.8);
 		}
 	}
 
