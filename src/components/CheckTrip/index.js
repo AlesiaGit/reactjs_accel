@@ -18,6 +18,21 @@ class CheckTrip extends Component {
 	    };
 	}
 
+	componentDidMount = () => {
+		this.props.setStatusBarColor("#4c88b7");
+	}
+
+	preventResize = () => {
+        document
+            .querySelector("meta[name=viewport]")
+            .setAttribute(
+                "content",
+                "width=device-width, height=" +
+                    window.innerWidth / this.props.ratio +
+                    ", user-scalable=no, initial-scale=1.0, maximum-scale=1.0"
+            );
+    };
+
 	onMenuToggle = () => {
 		this.setState({ isDrawer: !this.state.isDrawer })
 	}
@@ -44,7 +59,7 @@ class CheckTrip extends Component {
 	}
 
 	render() {
-		let { text, color, isDrawer, isSearchMode, isGuidanceMode, start, end } = this.state;
+		let { text, color, isDrawer, isSearchMode, isGuidanceMode, start, end, ratio } = this.state;
 		let drawerDisplay = isDrawer ? "block" : "none";
 		let searchBtnDisplay = (!isSearchMode && !isGuidanceMode) ? "flex" : "none";
 
@@ -62,6 +77,7 @@ class CheckTrip extends Component {
 							start={start}
 							end={end}
 							isSearchMode={isSearchMode} 
+							preventResize={this.preventResize}
 							/>
 						<div className="directions-btn" 
 							style={{display: searchBtnDisplay}} 
@@ -75,6 +91,7 @@ class CheckTrip extends Component {
 						isCheckTripView={true}
 						/>
 					<NextStepButton 
+						isDisplayed={true}
 						color={color} 
 						toggleButton={this.onNextStepButtonToggle}
 						text={text}	/>	

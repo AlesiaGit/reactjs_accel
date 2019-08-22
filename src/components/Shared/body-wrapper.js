@@ -1,16 +1,18 @@
 import React, { Component } from 'react';
+
 import '../../styles/report-bumps.css';
 import '../../styles/check-trip.css';
 import '../../styles/shared.css';
 
 import { db } from '../Firebase/index';
-import { GoogleApiWrapper, Polyline, Marker, Circle} from 'google-maps-react';
+import { GoogleApiWrapper, Polyline } from 'google-maps-react';
 import { BumpsMap, Car } from './index';
 import FavoritiesList from '../ReportBumps/favorities-list';
 import * as helpers from '../../helpers/index';
 
 
 let navigatorId;
+let timerId;
 
 const NAVIGATOR_OPTIONS = {
 	enableHighAccuracy: true,
@@ -34,7 +36,8 @@ class Body extends Component {
 	    	dimentions: { height: window.innerHeight, width: window.innerWidth },
 	    	favorities: JSON.parse(localStorage.getItem("favorities")) || [], //заменить на данные с Firestore
 	    	bumps: [],
-	    	allBumps: []
+	    	allBumps: [],
+	    	cover: false
 	    };
 
 	    this.canvas = React.createRef();
@@ -49,11 +52,11 @@ class Body extends Component {
 		        return doc.data().data;
 		    }
 		}).then(allBumps => {
-			this.setState({allBumps})
+			this.setState({allBumps});
+			//localStorage.setItem("bumps", JSON.stringify(allBumps));
 		})
 
 		window.addEventListener('resize', this.updateWindowDimensions);
-
 	}
 
 	componentDidUpdate = (prevProps, prevState) => {
@@ -71,6 +74,10 @@ class Body extends Component {
 			} else {
 				this.stopRecording();
 			}
+	   	}
+
+		if (prevProps.isShareView !== this.props.isShareView && this.props.isShareView === true) {
+	   		this.addTripToShared();
 	   	}
 	}
 
@@ -112,7 +119,6 @@ class Body extends Component {
 		let { prev, average, max, ticks } = this.state.acceleration;
 		let { lat, lng } = this.state.currentLocation;
 		let bumps = this.state.bumps;
-		let maps = this.props.google.maps;	
 
 		if (x !== null && y !== null && z !== null) {
 			let ax = x - prev.x;
@@ -123,6 +129,9 @@ class Body extends Component {
 			if (curr > 2.829226039) {
 				this.setState({
 					bumps: (bumps.length === 0 || !helpers.compare(bumps[bumps.length - 1], {lat, lng})) ? [...bumps, {lat, lng}] : bumps,
+				}, () => {
+					this.setState({cover: true})
+					timerId = setTimeout(this.animateBump, 800);
 				});
 			}
 
@@ -130,6 +139,11 @@ class Body extends Component {
 
 			this.setState({acceleration: {prev: { x, y, z }, average, max, ticks}})
 		}
+	}
+
+	animateBump = () => {
+		this.setState({cover: false})
+		clearTimeout(timerId);
 	}	
 
 	updateLocationData = location => {
@@ -194,9 +208,10 @@ class Body extends Component {
 		if (favorities.length === 5) favorities.shift();
 
 		let endpoints = [path[0], path[path.length - 1]];
+		let id = `f${(~~(Math.random()*1e8)).toString(16)}`;
 		this.convertToReadableAddress(endpoints).then(({start, end}) => {
 			this.setState({
-				favorities: [...favorities, { start, end, path, zoom, center, bumps, tripdistance }]
+				favorities: [...favorities, { id, start, end, path, zoom, center, bumps, tripdistance }]
 			}, () => localStorage.setItem('favorities', JSON.stringify(this.state.favorities)));
 		});
 	}
@@ -228,10 +243,15 @@ class Body extends Component {
 		bumps.set({bumps: this.state.bumps});
 	}
 
+	addTripToShared = () => {
+		let id = this.props.selectedTrip;
+
+		db.collection("shared").doc(id).set({"tripdata": this.state.favorities.filter(item => item.id === id)[0]});
+	}
+
 	render() {
 		let { bumps, angle, move, path, allBumps, favorities, dimentions, currentLocation } = this.state;
 		let { google, isSearchMode, start, end, isFavoritiesView, isCheckTripView, isRecordingMode, selectedTrip, isGuidanceMode } = this.props;
-
 		
 		if (isCheckTripView) {
 			return (
@@ -247,19 +267,19 @@ class Body extends Component {
 						camelize={helpers.camelize}	
 						bumps={bumps}
 						allBumps={allBumps}
+						isCheckTripView={true}
 						isSearchMode={isSearchMode} 
 						start={start} 
 						end={end} >
-					<Car 
-						angle={angle}
-						move={move}
-						resetMove={this.resetMove}
-						/>
-						</BumpsMap>	
+						<Car 
+							angle={angle}
+							move={move}
+							resetMove={this.resetMove} />
+					</BumpsMap>	
+					
 				</div>
 			)
 		}
-
 
 		if (isFavoritiesView) {
 			return (
@@ -268,10 +288,9 @@ class Body extends Component {
 					selectedTrip={selectedTrip}
 					google={google} 
 					dimentions={dimentions}
-					onTripSelect={this.props.onTripSelect}
-					/>
+					onTripSelect={this.props.onTripSelect} />
 			)
-		}
+		}		
 
 		return (
 			<div className="map">
@@ -299,8 +318,7 @@ class Body extends Component {
 						strokeWeight={4} 
 						/>					
 				</BumpsMap>
-				<button onClick={this.sendBumpsToFirebase} style={{ position: 'absolute', top: '17vh', left: 0, height: '5vh'}}>Add bumps to map</button>
-				<button onClick={this.sendTripToFirebase} style={{ position: 'absolute', top: '26vh', left: 0, height: '5vh'}}>Save trip to firebase</button>
+				<div className="map-bump-cover" style={{display: this.state.cover ? "flex": "none"}}/>
 			</div>
 		);
 	}
@@ -309,3 +327,7 @@ class Body extends Component {
 export default GoogleApiWrapper({
  	apiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY
 })(Body);
+
+
+//<button onClick={this.sendBumpsToFirebase} style={{ position: 'absolute', top: '17vh', left: 0, height: '5vh'}}>Add bumps to map</button>
+//<button onClick={this.sendTripToFirebase} style={{ position: 'absolute', top: '26vh', left: 0, height: '5vh'}}>Save trip to firebase</button>

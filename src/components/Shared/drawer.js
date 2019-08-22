@@ -2,13 +2,6 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 
 class Drawer extends Component {
-	constructor(props) {
-		super(props);
-		this.state = {
-			current: null
-		}
-	}
-
 	render() {
 		let items = [
 			{id: "map", title: "Report a bump"},
@@ -39,17 +32,3 @@ class Drawer extends Component {
 }
 
 export default Drawer;
-
-// <Link className="drawer-item" exact="true" to="/map" replace id="map" >
-// 							Report a bump
-// 						</Link>
-						
-// 						<Link className={`drawer-item ${this.state.current === "checktrip" ? "drawer-item-active" : ""}`} exact="true" to="/checktrip" replace id="checktrip" onClick={this.markSelection} >
-// 							Check your trip
-// 						</Link>
-// 						<Link className="drawer-item" exact="true" to="/" replace >
-// 							Calibrate sensors
-// 						</Link>
-// 						<Link className="drawer-item" exact="true" to="/" replace >
-// 							Settings
-// 						</Link>

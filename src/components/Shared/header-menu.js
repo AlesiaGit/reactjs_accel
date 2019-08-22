@@ -1,18 +1,17 @@
 import React, { Component } from 'react';
 
 class HeaderMenu extends Component {
+
 	render() {
-		//let icon = this.props.icon !== null ? "back-arrow" : "burger-icon";
-		//let title = this.props.title !== null ? "Back to list" : "Report a bump";
-		
+		console.log(this.props)
 		return (
-				<div className="header-menu">
+				<div className="header-menu" >
 					<div className="header-left-menu">
-						<div className={`header-menu-icon ${this.props.icon}`} onClick={() => this.props.onMenuToggle()}></div>
+						<div className={`header-menu-icon ${this.props.icon}`} id="left" onClick={(e) => this.props.onMenuToggle(e)}/>
 						<div className="page-title">{this.props.title}</div>
 					</div>
-					<div className="header-right-menu">
-						<div className="header-menu-icon settings-icon"></div>
+					<div className="header-right-menu" >
+						<div className={`header-menu-icon ${this.props.rightIcon}`}  id="right" onClick={(e) => this.props.onMenuToggle(e)}/>
 					</div>
 				</div>
 				

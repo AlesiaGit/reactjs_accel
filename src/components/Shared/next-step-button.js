@@ -7,7 +7,7 @@ class NextStepButton extends Component {
 		return (
 			<div 
 				className="bottom-ruler-btn" 
-				style={{backgroundColor: this.props.color}} 
+				style={{ backgroundColor: this.props.color, display: this.props.isDisplayed ? "flex" : "none" }} 
 				onClick={() => this.props.toggleButton()} 
 				disabled={!this.props.disableCondition}>
 				{this.props.text}

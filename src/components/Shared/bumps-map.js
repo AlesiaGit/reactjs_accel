@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import * as helpers from '../../helpers/index';
 
 class BumpsMap extends Component {
 	constructor(props) {
@@ -10,12 +11,14 @@ class BumpsMap extends Component {
 			currentLocation: {lat, lng}, 
 			zoom: 17,
 			isCurrentPositionReceived: false,
+			temp: []
 		};
 
 		this.mymap = React.createRef();
 		this.mymarker = React.createRef();
 		this.tripBumps = [];
 		this.databaseBumps = [];
+		this.directionsBumps = [];
 	}
 
 	componentDidMount = () => {
@@ -47,11 +50,11 @@ class BumpsMap extends Component {
 		}
 
 		if (prevProps.bumps !== this.props.bumps) {
-			this.setBumpsOnMap(this.props.bumps, this.tripBumps, "#fbad19", 1.4);
+			this.tripBumps = this.setBumpsOnMap(this.props.bumps, this.tripBumps, "#fbad19", 0.8);
 		}
 
-		if (prevProps.allBumps !== this.props.allBumps) {
-			this.setBumpsOnMap(this.props.allBumps, this.databaseBumps, "#e34929", 0.8);
+		if (prevProps.allBumps !== this.props.allBumps && !this.props.isCheckTripView) {
+			this.databaseBumps = this.setBumpsOnMap(this.props.allBumps, this.databaseBumps, "#e34929", 0.8);
 		}
 
 		if (prevProps.isSearchMode !== this.props.isSearchMode && this.props.isSearchMode === false) {
@@ -60,10 +63,6 @@ class BumpsMap extends Component {
 			if (start !== "") return this.buildRoute({start, end});
 			navigator.geolocation.getCurrentPosition((pos) => this.buildRoute({start: new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude), end}));
 		}
-
-		// if (prevProps.isSearchMode !== this.props.isSearchMode && this.props.isSearchMode === true) {
-		// 	this.clearRoute();
-		// }
 	}
 
 	buildRoute = endpoints => {
@@ -77,14 +76,18 @@ class BumpsMap extends Component {
 		};
 
 		this.directionsService.route(request, (response, status) => {
-			console.log(maps.geometry.encoding.decodePath(response.routes[0].overview_polyline[0][0]))
-			if (status === 'OK') this.directionsDisplay.setDirections(response);
+			if (status === 'OK') {
+				let directionArray = [];
+				let polyline = maps.geometry.encoding.decodePath(response.routes[0].overview_polyline);
+				polyline.forEach(i => directionArray.push({lat: i.lat(), lng: i.lng()}));
+
+				let result = helpers.getRouteBumps(directionArray, this.props.allBumps);
+
+				this.databaseBumps = this.setBumpsOnMap(result, this.databaseBumps, "#e34929", 0.8);
+				this.directionsDisplay.setDirections(response);
+			}
 		});
 	}
-
-	// clearRoute = () => {
-	// 	if (this.map && this.directionsDisplay) this.directionsDisplay.setMap(null);
-	// }
 
 	convertAddressToCoordinates = addresses => {
 		return new Promise ((resolve, reject) => {
@@ -95,7 +98,7 @@ class BumpsMap extends Component {
 			for (var i = 0; i < addresses.length; i++) {
 				geocoder.geocode({'address': addresses[i]}, (results, status) => {
 					if (status !== 'OK') reject(new Error('Geocoder failed due to: ' + status));
-						
+					
 					coords.push(results[0].geometry.location);
 					if (coords.length === addresses.length) resolve({start: coords[0], end: coords[1]});
 				});
@@ -133,7 +136,9 @@ class BumpsMap extends Component {
 
 			maps.event.trigger(this.map, 'ready');
 
-			if (this.map) this.setBumpsOnMap(this.props.allBumps, this.databaseBumps, "#e34929", 0.8);
+			if (this.map && !this.props.isCheckTripView) { 
+				this.databaseBumps = this.setBumpsOnMap(this.props.allBumps, this.databaseBumps, "#e34929", 0.8);
+			}
 		}
 	}
 
@@ -190,6 +195,8 @@ class BumpsMap extends Component {
 				map: this.map 
 			}))
 		})
+
+		return markersArray;
 	}
 
 	updateCurrent = (location) => {
@@ -226,8 +233,8 @@ class BumpsMap extends Component {
 
 		return (
 			<div ref={this.mymap} style={style}>
-				Loading...
-				{this.renderChildren()}
+			Loading...
+			{this.renderChildren()}
 			</div>
 			);
 	}
@@ -239,8 +246,8 @@ export default BumpsMap;
 BumpsMap.defaultProps = {
 	zoom: 16,
 	initialCenter: {
-	  	lat: 53.893009,
-	  	lng: 27.567444
+		lat: 53.893009,
+		lng: 27.567444
 	},
 	centerAroundCurrentLocation: false
 }

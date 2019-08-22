@@ -1,16 +1,111 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Bumpy Roads",
+  "name": "Bumpy Roads Informer",
   "icons": [
     {
-      "src": "favicon.ico",
-      "sizes": "64x64 32x32 24x24 16x16",
-      "type": "image/x-icon"
+        "src": "icons/favicon.ico",
+        "sizes": "64x64 32x32 24x24 16x16",
+        "type": "image/x-icon"
+    },
+    {
+        "src": "icons/cfcc200f-5327-fc54-9308-39053b6665d0.webPlatform.png",
+        "sizes": "44x44",
+        "type": "image/png"
+    },
+    {
+        "src": "icons/bb6f95d0-e031-5078-a9a1-8e1502cb2fa3.webPlatform.png",
+        "sizes": "48x48",
+        "type": "image/png"
+    },
+    {
+        "src": "icons/882e8336-123a-5ede-46f4-7eed45f48ad1.webPlatform.png",
+        "sizes": "1240x600",
+        "type": "image/png"
+    },
+    {
+        "src": "icons/aee25643-c04b-f0c1-8df0-c26fd303f7e7.webPlatform.png",
+        "sizes": "300x300",
+        "type": "image/png"
+    },
+    {
+        "src": "icons/5db1ba79-0317-4b73-1525-5e71b5f35c11.webPlatform.png",
+        "sizes": "150x150",
+        "type": "image/png"
+    },
+    {
+        "src": "icons/4c0e5d5a-be6f-d0ca-b0bf-578cadf23463.webPlatform.png",
+        "sizes": "88x88",
+        "type": "image/png"
+    },
+    {
+        "src": "icons/aaaad767-8e3b-5b3c-f64d-09c9c0fba559.webPlatform.png",
+        "sizes": "24x24",
+        "type": "image/png"
+    },
+    {
+        "src": "icons/100dcc09-c66d-3cd3-fba4-86a3a49a222b.webPlatform.png",
+        "sizes": "50x50",
+        "type": "image/png"
+    },
+    {
+        "src": "icons/10d5cd63-ec43-aa81-0e50-2a422aaeee85.webPlatform.png",
+        "sizes": "620x300",
+        "type": "image/png"
+    },
+    {
+        "src": "icons/52e480ef-925f-2dcf-543c-51b4f2f9358a.webPlatform.png",
+        "sizes": "192x192",
+        "type": "image/png"
+    },
+    {
+        "src": "icons/3c5e987c-5311-7023-c612-2bd06140458c.webPlatform.png",
+        "sizes": "144x144",
+        "type": "image/png"
+    },
+    {
+        "src": "icons/da302a78-0421-bdb7-ee87-4f58e5dcf2a5.webPlatform.png",
+        "sizes": "96x96",
+        "type": "image/png"
+    },
+    {
+        "src": "icons/f5842017-7559-4c8e-cc25-1ea1556820ef.webPlatform.png",
+        "sizes": "72x72",
+        "type": "image/png"
+    },
+    {
+        "src": "icons/e7c66f07-a962-6793-ce3c-dd85c5ad4002.webPlatform.png",
+        "sizes": "36x36",
+        "type": "image/png"
+    },
+    {
+        "src": "icons/5b75d7d9-6696-c1e5-c5ff-6244321bd58e.webPlatform.png",
+        "sizes": "1024x1024",
+        "type": "image/png"
+    },
+    {
+        "src": "icons/de161ede-98db-ec5b-4178-2c809491d0dc.webPlatform.png",
+        "sizes": "180x180",
+        "type": "image/png"
+    },
+    {
+        "src": "icons/05da9d85-b85f-eb05-83af-e4aa41c6e5d9.webPlatform.png",
+        "sizes": "152x152",
+        "type": "image/png"
+    },
+    {
+        "src": "icons/dd1e3606-1045-0f02-b2cc-f545bd1be6c3.webPlatform.png",
+        "sizes": "120x120",
+        "type": "image/png"
+    },
+    {
+        "src": "icons/9babbd9a-e0df-ea8e-382e-c5e4bded7956.webPlatform.png",
+        "sizes": "76x76",
+        "type": "image/png"
     }
   ],
   "start_url": ".",
   "orientation": "portrait",
   "display": "standalone",
   "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "background_color": "#fbad19"
 }

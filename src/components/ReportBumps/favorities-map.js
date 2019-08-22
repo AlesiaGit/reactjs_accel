@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import { db } from '../Firebase/index';
+import ShareBlock from './share-block';
 
 class FavoritiesMap extends Component {
 	constructor(props) {
@@ -68,7 +70,7 @@ class FavoritiesMap extends Component {
 		this.trip.setMap(null);
 		this.bumps.forEach(bump => bump.setMap(null));
 	}
-
+	
 	render() {
 		if (!this.props.favorities) return;
 		let { width, height } = this.props.dimentions;

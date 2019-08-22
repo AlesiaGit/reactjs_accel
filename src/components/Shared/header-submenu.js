@@ -1,14 +1,15 @@
 import React, { Component } from 'react';
+import * as helpers from '../../helpers/index';
 
 class HeaderSubmenu extends Component {
 
 	handleEvent = condition => {
-		const handlerName = `on${this.props.camelize(condition)}`;
+		const handlerName = `on${helpers.camelize(condition)}`;
 		this.props[handlerName]();
 	}
 
 	handleSelection = condition => {
-		const selectedOption = `is${this.props.camelize(condition)}`;
+		const selectedOption = `is${helpers.camelize(condition)}`;
 		return this.props[selectedOption];
 	}
 

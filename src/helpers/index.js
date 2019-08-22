@@ -80,4 +80,21 @@ function getBounds(arrayOfCoords) { //sw, ne
 	return bounds; 
 }
 
-export { camelize, compare, toRad, getDistance, getAngle, getZoom, getCenter, getBounds };
+function getRouteBumps(directionArray, bumpsArray) {
+	let routeBumps = [];
+	directionArray.forEach((i, index) => {
+    if (index < directionArray.length - 1) {
+        let routeSectionLength = getDistance(i.lat, i.lng, directionArray[index + 1].lat, directionArray[index + 1].lng);
+		
+		let startAndBump, endAndBump;
+		bumpsArray.forEach(n => { 
+			startAndBump = getDistance(i.lat, i.lng, n.lat, n.lng);
+			endAndBump = getDistance(directionArray[index + 1].lat, directionArray[index + 1].lng, n.lat, n.lng);
+			if ((startAndBump + endAndBump) < routeSectionLength + 0.1) routeBumps.push({lat: n.lat, lng: n.lng}); //console.log("directionArray->", i, "bump->", n);
+        })
+    }});
+
+    return routeBumps;
+}
+
+export { camelize, compare, toRad, getDistance, getAngle, getZoom, getCenter, getBounds, getRouteBumps };

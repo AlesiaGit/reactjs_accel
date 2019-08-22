@@ -5,7 +5,7 @@ import { Route, HashRouter } from 'react-router-dom';
 import { createBrowserHistory } from "history";
 
 import ReportBumps from './ReportBumps/index';
-//import FavoritiesMap from './ReportBumps/favorities-map';
+import SharedTrip from './SharedTrip/index';
 import CheckTrip from './CheckTrip/index';
 import Start from './Start/index';
 
@@ -17,7 +17,8 @@ class App extends Component {
 		super(props);
 
 	    this.state = {
-	    	current: "map"
+	    	current: window.location.hash.slice(2) || "map",
+	    	ratio: window.innerWidth/window.innerHeight
 	    };
 	}
 
@@ -33,20 +34,39 @@ class App extends Component {
 		})
 	}
 
+	setStatusBarColor = color => {
+        document
+            .querySelector("meta[name=theme-color]")
+            .setAttribute("content", color);
+    };
+
 	markSelection = e => {
-		this.setState({
-			current: e.currentTarget.id
-		})
+		let current = e.currentTarget.id;
+		this.setState({ current });
 	}
 
 	render() {
-		let current = this.state.current;
+		let { current, ratio } = this.state;
 
 	    return (
 		    <HashRouter history={customHistory} >
-		       	<Route exact path="/" component={Start} />
-				<Route exact path="/map" component={() => <ReportBumps current={current} markSelection={this.markSelection} />} />
-				<Route exact path="/checktrip" component={() => <CheckTrip current={current} markSelection={this.markSelection} />} />
+		       	<Route exact path="/" component={() => {
+		       		return <Start setStatusBarColor={this.setStatusBarColor} />}} />
+				<Route exact path="/map" component={() => {
+					return <ReportBumps 
+						current={current} 
+						markSelection={this.markSelection} 
+						setStatusBarColor={this.setStatusBarColor}
+						/>
+					}} />
+				<Route exact path="/checktrip" component={() => {
+					return <CheckTrip 
+						current={current} 
+						markSelection={this.markSelection} 
+						ratio={ratio} 
+						setStatusBarColor={this.setStatusBarColor}/>
+					}} />
+				<Route path="/shared/:number" component={() => (<SharedTrip	setStatusBarColor={this.setStatusBarColor}/>)} />
   			</HashRouter>
 	    );
 	}  

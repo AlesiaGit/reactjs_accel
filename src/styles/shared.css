@@ -39,6 +39,16 @@ body {
 	height: 100vh;
     overflow: hidden;
     width: 100%;
+    position: relative;
+}
+
+.map-bump-cover {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(227, 73, 41, 0.36);
 }
 
 .header {
@@ -88,6 +98,12 @@ body {
 	background-image: url("../images/dots-menu.png");
 	margin-left: 0;
 	margin-right: 3vw;
+}
+
+.share-icon {
+    background-image: url("../images/share-icon.png");
+    margin-left: 0;
+    margin-right: 4vw;
 }
 
 .page-title {

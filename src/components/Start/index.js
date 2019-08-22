@@ -3,6 +3,10 @@ import { Link } from 'react-router-dom';
 import '../../styles/start.css';
 
 class Start extends Component {
+	componentDidMount = () => {
+		this.props.setStatusBarColor("#fbad19");
+	}
+	
 	render() {
 		return (
 			<div className="wrapper">

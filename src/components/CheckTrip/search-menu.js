@@ -14,7 +14,8 @@ class SearchMenu extends Component {
 								name={item} 
 								value={this.props[item]}
 								className="search-input" 
-								placeholder={(item === "start") ? "(Мое местоположение)" : ""}
+								placeholder={(item === "start") ? "(Current position)" : ""}
+								onFocus={this.props.preventResize}
 								onChange={e => this.props.handleChange(e)} />
 							<div 
 								className="search-cancel-btn"
