@@ -2,6 +2,16 @@ import React, { Component } from 'react';
 import { db } from '../Firebase/index';
 import ShareBlock from './share-block';
 
+import { connect } from "react-redux";
+import store from "../../store/store";
+import { noTripsSelected } from "../../ducks/selected-trip";
+
+const mapStateToProps = state => {
+    return {
+        selectedTrip: state.selectedTrip
+    };
+};
+
 class FavoritiesMap extends Component {
 	constructor(props) {
 		super(props);
@@ -16,7 +26,7 @@ class FavoritiesMap extends Component {
 	}
 
 	componentDidUpdate = (prevProps, prevState) => {
-		if (prevProps.google !== this.props.google || prevProps.favorities !== this.props.favorities) {
+		if (prevProps.google !== this.props.google || prevProps.selectedTrip !== this.props.selectedTrip) {
 			this.loadMap();
 		}
 	}
@@ -25,7 +35,7 @@ class FavoritiesMap extends Component {
 		if (this.props.google) {
 
 			let maps = this.props.google.maps;
-			let { zoom, path, center, bumps } = this.props.favorities;
+			let { zoom, path, center, bumps } = this.props.selectedTrip;
 
 			const mapOptions = {
 				center,
@@ -69,10 +79,12 @@ class FavoritiesMap extends Component {
 	componenWillUnmount = () => {
 		this.trip.setMap(null);
 		this.bumps.forEach(bump => bump.setMap(null));
+		store.dispatch(noTripsSelected());
+		store.getState();
 	}
 	
 	render() {
-		if (!this.props.favorities) return;
+		if (!this.props.selectedTrip) return;
 		let { width, height } = this.props.dimentions;
 
 		let style = {
@@ -89,4 +101,4 @@ class FavoritiesMap extends Component {
 	}
 }
 
-export default FavoritiesMap;
+export default connect(mapStateToProps)(FavoritiesMap);

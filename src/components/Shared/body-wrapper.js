@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { connect } from "react-redux";
 
 import '../../styles/report-bumps.css';
 import '../../styles/check-trip.css';
@@ -9,6 +10,18 @@ import { GoogleApiWrapper, Polyline } from 'google-maps-react';
 import { BumpsMap, Car } from './index';
 import FavoritiesList from '../ReportBumps/favorities-list';
 import * as helpers from '../../helpers/index';
+
+//store
+import store from "../../store/store";
+import { selectTrip, noTripsSelected } from "../../ducks/selected-trip";
+
+
+const mapStateToProps = state => {
+    return {
+        selectedTrip: state.selectedTrip,
+        menu: state.menu
+    };
+};
 
 
 let navigatorId;
@@ -79,6 +92,7 @@ class Body extends Component {
 		if (prevProps.isShareView !== this.props.isShareView && this.props.isShareView === true) {
 	   		this.addTripToShared();
 	   	}
+
 	}
 
 	componentWillUnmount = () => {
@@ -244,15 +258,29 @@ class Body extends Component {
 	}
 
 	addTripToShared = () => {
-		let id = this.props.selectedTrip;
-
+		let id = this.props.selectedTrip.id;
 		db.collection("shared").doc(id).set({"tripdata": this.state.favorities.filter(item => item.id === id)[0]});
+	}
+
+	onTripSelect = trip => {
+		store.dispatch(selectTrip(trip))
 	}
 
 	render() {
 		let { bumps, angle, move, path, allBumps, favorities, dimentions, currentLocation } = this.state;
-		let { google, isSearchMode, start, end, isFavoritiesView, isCheckTripView, isRecordingMode, selectedTrip, isGuidanceMode } = this.props;
+		let { google, isSearchMode, start, end, isCheckTripView, isRecordingMode, selectedTrip, isFavoritiesView, isGuidanceMode } = this.props;
 		
+		if (isFavoritiesView) {
+			return (
+				<FavoritiesList 
+					favorities={favorities} 
+					//selectedTrip={selectedTrip}
+					google={google} 
+					dimentions={dimentions}
+					onTripSelect={this.onTripSelect} />
+			)
+		}		
+
 		if (isCheckTripView) {
 			return (
 				<div className="map">
@@ -281,17 +309,7 @@ class Body extends Component {
 			)
 		}
 
-		if (isFavoritiesView) {
-			return (
-				<FavoritiesList 
-					favorities={favorities} 
-					selectedTrip={selectedTrip}
-					google={google} 
-					dimentions={dimentions}
-					onTripSelect={this.props.onTripSelect} />
-			)
-		}		
-
+		
 		return (
 			<div className="map">
 				<BumpsMap 
@@ -324,9 +342,11 @@ class Body extends Component {
 	}
 }
 
-export default GoogleApiWrapper({
+const WrapperContainer = GoogleApiWrapper({
  	apiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY
 })(Body);
+
+export default connect(mapStateToProps)(WrapperContainer);
 
 
 //<button onClick={this.sendBumpsToFirebase} style={{ position: 'absolute', top: '17vh', left: 0, height: '5vh'}}>Add bumps to map</button>

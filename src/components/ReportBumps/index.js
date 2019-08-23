@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Redirect } from 'react-router-dom';
+import { connect } from "react-redux";
 
 import '../../styles/shared.css';
 import '../../styles/shared-trip.css';
@@ -8,111 +9,120 @@ import * as helpers from '../../helpers/index';
 import ShareBlock from './share-block';
 import { db } from '../Firebase/index';
 
+//store
+import store from "../../store/store";
+import { selectTrip, noTripsSelected } from "../../ducks/selected-trip";
+import * as menu from "../../ducks/menu-state";
+
+const mapStateToProps = state => {
+    return {
+        selectedTrip: state.selectedTrip,
+        menu: state.menu
+    };
+};
+
 class ReportBumps extends Component {
 	constructor(props) {
 		super(props);
 
 	    this.state = {
-	    	isFavoritiesView: false, 
+	    	//isFavoritiesView: false, 
 	    	isRecordingMode: false, 
-	    	selectedTrip: null,
-	    	isMapView: true, 
-	    	submenuOptions: ["Favorities View", "Map View"],
-	    	isDrawer: false,
+	    	//selectedTrip: this.props.selectedTrip, //null,
+	    	//isMapView: true, 
+	    	//submenuOptions: ["Favorities List", "Bumps Map"],
+	    	//isDrawer: false,
 	    	isShareView: false
 	    };
 
 	    this.cover = React.createRef();
+
+	    //console.log(this.props.selectedTrip)
 	}
 
 	componentDidMount = () => {
 		this.props.setStatusBarColor("#4c88b7");
 	}
 
-	onFavoritiesView = () => {
-		this.setState({
-			isFavoritiesView: true,
-			isMapView: false
-		});
-	}
+	// onFavoritiesListView = () => {
+	// 	store.dispatch(selectFavListView());
+	// 	// this.setState({
+	// 	// 	//isFavoritiesView: true,
+	// 	// 	isMapView: false
+	// 	// });
+	// }
 
-	onMapView = () => {
-		this.setState({
-			isFavoritiesView: false,
-			isMapView: true,
-			//selectedTrip: null
-		});
-	}
+	// onBumpsMapView = () => {
+	// 	store.dispatch(selectBumpsMapView());
+	// 	// this.setState({
+	// 	// 	//isFavoritiesView: false,
+	// 	// 	isMapView: true,
+	// 	// });
+	// }
 
-	onTripSelect = selectedTrip => {
-		this.setState({ selectedTrip })
-	}
-
-	onMenuToggle = e => {
-		console.log(e.currentTarget)
-		let id = e.currentTarget.id;
-		if (id === "left" || id === "cover") {
-			this.setState({ isDrawer: !this.state.isDrawer });
+	onMenuToggle = () => {
+		console.log(this.props.menu)
+		if (this.props.menu.isDrawerView) return store.dispatch(menu.closeDrawerView());
+		
+		if (this.props.menu.isSelectedTripView) {
+			store.dispatch(noTripsSelected());
+			store.dispatch(menu.selectFavoritiesListView());
+			return;
 		} 
 
-
-		if (id === "right") {
-			console.log('im here')
-			this.setState({ isShareView: !this.state.isShareView });
-		}
-		// console.log('left menu fired')
-		// if (this.state.selectedTrip !== null) { //слабое место
-		// 	this.setState({ selectedTrip: null })
-		// } else {
-			//this.setState({ isDrawer: !this.state.isDrawer })
-		//}
+		return store.dispatch(menu.selectDrawerView());
 	}
 
 	toggleRecording = () => {
-		this.setState({isRecordingMode: !this.state.isRecordingMode});  
+		this.setState({ isRecordingMode: !this.state.isRecordingMode });  
 	}
 
 	onRightMenuToggle = () => {
-		this.setState({ isShareView: !this.state.isShareView }, () => console.log(this.state.isShareView));
+		this.setState({ isShareView: !this.state.isShareView });
+	}
+
+	handleEvent = condition => {
+		const handlerName = `select${helpers.camelize(condition)}View`;
+		store.dispatch(menu[handlerName]());
+		console.log(store.getState())
+	}
+
+	handleSelection = condition => {
+		const selectedOption = `is${helpers.camelize(condition)}View`;
+		return this.props.menu[selectedOption];
 	}
 
 	render() {
-		console.log(this.state.isShareView)
 		return (
 			<div className="wrapper">
 				<div className="main">
 					<div className="header">
 						<HeaderMenu 
-							title={this.state.selectedTrip !== null ? "Back to list" : "Report a bump"} 
-							icon={this.state.selectedTrip !== null ? "back-arrow" : "burger-icon"} 
 							onMenuToggle={this.onMenuToggle} 
-							rightIcon={this.state.selectedTrip !== null ? "share-icon" : ""}
 							onRightMenuToggle={this.onRightMenuToggle} />
 						<HeaderSubmenu 
-							isFavoritiesView={this.state.isFavoritiesView}
-							isMapView={this.state.isMapView}
-							onFavoritiesView={this.onFavoritiesView}
-							onMapView={this.onMapView}
-							options={this.state.submenuOptions} />
+							handleEvent={this.handleEvent}
+							handleSelection={this.handleSelection}
+						/>
 					</div>
 					<Body 
-						selectedTrip={this.state.selectedTrip}
-						onTripSelect={this.onTripSelect}
+						//selectedTrip={this.state.selectedTrip}
+						//onTripSelect={this.onTripSelect}
 						google={this.props.google}
-						isFavoritiesView={this.state.isFavoritiesView} 
+						isFavoritiesView={this.props.menu.isFavoritiesListView} 
 						isRecordingMode={this.state.isRecordingMode}
 						isCheckTripView={false} 
 						isShareView={this.state.isShareView}
 						/>
 					<NextStepButton 
-						isDisplayed={!this.state.isFavoritiesView}
+						isDisplayed={!this.props.menu.isFavoritiesListView}
 						color={!this.state.isRecordingMode ? "#757d75" : "#e34929"}
 						toggleButton={this.toggleRecording}
 						disableCondition={!this.state.isDataFetched}
 						text={this.state.isRecordingMode ? "Stop Recording" : "Start Recording"}/>
 						<ShareBlock isShareView={this.state.isShareView} id={this.state.selectedTrip} />
 				</div>
-				<div className="cover" style={{display: this.state.isDrawer ? "block" : "none"}}>
+				<div className="cover" style={{display: this.props.menu.isDrawerView ? "block" : "none"}}>
 					<div className="cover-background" ref="cover" onClick={this.onMenuToggle} id="cover" />
 					<Drawer current={this.props.current} markSelection={this.props.markSelection}/>
 				</div>
@@ -121,6 +131,4 @@ class ReportBumps extends Component {
 	}
 }
 
-export default ReportBumps;
-
-//	
+export default connect(mapStateToProps)(ReportBumps);
