@@ -19,7 +19,6 @@ class FavoritiesList extends Component {
 		
 
 		let { favorities, selectedTrip, google, dimentions } = this.props;
-		console.log(this.props)
 		if (!favorities.length) return null;
 
 		if (selectedTrip !== null) {

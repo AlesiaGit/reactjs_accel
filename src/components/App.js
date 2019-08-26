@@ -40,11 +40,6 @@ class App extends Component {
             .setAttribute("content", color);
     };
 
-	markSelection = e => {
-		let current = e.currentTarget.id;
-		this.setState({ current });
-	}
-
 	render() {
 		let { current, ratio } = this.state;
 
@@ -54,15 +49,11 @@ class App extends Component {
 		       		return <Start setStatusBarColor={this.setStatusBarColor} />}} />
 				<Route exact path="/map" component={() => {
 					return <ReportBumps 
-						current={current} 
-						markSelection={this.markSelection} 
 						setStatusBarColor={this.setStatusBarColor}
 						/>
 					}} />
 				<Route exact path="/checktrip" component={() => {
 					return <CheckTrip 
-						current={current} 
-						markSelection={this.markSelection} 
 						ratio={ratio} 
 						setStatusBarColor={this.setStatusBarColor}/>
 					}} />

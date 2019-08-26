@@ -1,5 +1,12 @@
 import React, { Component } from 'react';
 import * as helpers from '../../helpers/index';
+import { connect } from "react-redux";
+
+const mapStateToProps = state => {
+    return {
+        menu: state.menu
+    };
+};
 
 class BumpsMap extends Component {
 	constructor(props) {
@@ -53,7 +60,7 @@ class BumpsMap extends Component {
 			this.tripBumps = this.setBumpsOnMap(this.props.bumps, this.tripBumps, "#fbad19", 0.8);
 		}
 
-		if (prevProps.allBumps !== this.props.allBumps && !this.props.isCheckTripView) {
+		if (prevProps.allBumps !== this.props.allBumps && !this.props.menu.isCheckTripView) {
 			this.databaseBumps = this.setBumpsOnMap(this.props.allBumps, this.databaseBumps, "#e34929", 0.8);
 		}
 
@@ -136,7 +143,7 @@ class BumpsMap extends Component {
 
 			maps.event.trigger(this.map, 'ready');
 
-			if (this.map && !this.props.isCheckTripView) { 
+			if (this.map && !this.props.menu.isCheckTripView) { 
 				this.databaseBumps = this.setBumpsOnMap(this.props.allBumps, this.databaseBumps, "#e34929", 0.8);
 			}
 		}
@@ -144,7 +151,7 @@ class BumpsMap extends Component {
 
 	handleEvent(evtName) {
 		let timeout;
-		const handlerName = `on${this.props.camelize(evtName)}`;
+		const handlerName = `on${helpers.camelize(evtName)}`;
 
 		return (e) => {
 			if (timeout) {
@@ -240,7 +247,7 @@ class BumpsMap extends Component {
 	}
 }
 
-export default BumpsMap;
+export default connect(mapStateToProps)(BumpsMap);
 
 
 BumpsMap.defaultProps = {

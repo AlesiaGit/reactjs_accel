@@ -13,6 +13,7 @@ import * as helpers from '../../helpers/index';
 
 //store
 import store from "../../store/store";
+import * as menu from "../../ducks/menu-state";
 import { selectTrip, noTripsSelected } from "../../ducks/selected-trip";
 
 
@@ -264,13 +265,14 @@ class Body extends Component {
 
 	onTripSelect = trip => {
 		store.dispatch(selectTrip(trip))
+		store.dispatch(menu.selectTripView())
 	}
 
 	render() {
 		let { bumps, angle, move, path, allBumps, favorities, dimentions, currentLocation } = this.state;
-		let { google, isSearchMode, start, end, isCheckTripView, isRecordingMode, selectedTrip, isFavoritiesView, isGuidanceMode } = this.props;
+		let { google, isSearchMode, start, end, isCheckTripView, isRecordingMode, selectedTrip, isGuidanceMode } = this.props;
 		
-		if (isFavoritiesView) {
+		if (this.props.menu.isFavoritiesListView) {
 			return (
 				<FavoritiesList 
 					favorities={favorities} 
@@ -281,7 +283,7 @@ class Body extends Component {
 			)
 		}		
 
-		if (isCheckTripView) {
+		if (this.props.menu.isCheckTripView) {
 			return (
 				<div className="map">
 					<BumpsMap 
@@ -292,10 +294,10 @@ class Body extends Component {
 						isRecordingMode={isGuidanceMode}
 						onZoomChanged={this.onZoomChanged}		
 						dimentions={dimentions}
-						camelize={helpers.camelize}	
+						//camelize={helpers.camelize}	
 						bumps={bumps}
 						allBumps={allBumps}
-						isCheckTripView={true}
+						//isCheckTripView={true}
 						isSearchMode={isSearchMode} 
 						start={start} 
 						end={end} >

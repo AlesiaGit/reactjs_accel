@@ -4,10 +4,10 @@ import { Link } from 'react-router-dom';
 class Drawer extends Component {
 	render() {
 		let items = [
-			{id: "map", title: "Report a bump"},
-			{id: "checktrip", title: "Check your trip"},
-			{id: "calibrate", title: "Calibrate sensors"},
-			{id: "settings", title: "Settings"}];
+			{id: "map", title: "Report a bump", action: 'selectBumpsMapView'},
+			{id: "checktrip", title: "Check your trip", action: 'selectCheckTripView' },
+			{id: "calibrate", title: "Calibrate sensors", action: 'selectBumpsMapView'},
+			{id: "settings", title: "Settings", action: 'selectBumpsMapView'}];
 
 		return (
 			<div className="drawer">
@@ -21,7 +21,7 @@ class Drawer extends Component {
 							id={item.id} 
 							to={`/${item.id}`} 
 							replace 
-							onClick={e => this.props.markSelection(e)}>
+							onClick={() => this.props.changeView(item.action)}>
 							{item.title}
 						</Link>
 					))}

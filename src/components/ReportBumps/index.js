@@ -26,42 +26,18 @@ class ReportBumps extends Component {
 		super(props);
 
 	    this.state = {
-	    	//isFavoritiesView: false, 
 	    	isRecordingMode: false, 
-	    	//selectedTrip: this.props.selectedTrip, //null,
-	    	//isMapView: true, 
-	    	//submenuOptions: ["Favorities List", "Bumps Map"],
-	    	//isDrawer: false,
 	    	isShareView: false
 	    };
 
 	    this.cover = React.createRef();
-
-	    //console.log(this.props.selectedTrip)
 	}
 
 	componentDidMount = () => {
 		this.props.setStatusBarColor("#4c88b7");
 	}
 
-	// onFavoritiesListView = () => {
-	// 	store.dispatch(selectFavListView());
-	// 	// this.setState({
-	// 	// 	//isFavoritiesView: true,
-	// 	// 	isMapView: false
-	// 	// });
-	// }
-
-	// onBumpsMapView = () => {
-	// 	store.dispatch(selectBumpsMapView());
-	// 	// this.setState({
-	// 	// 	//isFavoritiesView: false,
-	// 	// 	isMapView: true,
-	// 	// });
-	// }
-
 	onMenuToggle = () => {
-		console.log(this.props.menu)
 		if (this.props.menu.isDrawerView) return store.dispatch(menu.closeDrawerView());
 		
 		if (this.props.menu.isSelectedTripView) {
@@ -84,12 +60,16 @@ class ReportBumps extends Component {
 	handleEvent = condition => {
 		const handlerName = `select${helpers.camelize(condition)}View`;
 		store.dispatch(menu[handlerName]());
-		console.log(store.getState())
 	}
 
 	handleSelection = condition => {
 		const selectedOption = `is${helpers.camelize(condition)}View`;
 		return this.props.menu[selectedOption];
+	}
+
+	changeView = action => {
+		store.dispatch(menu[action]());
+		store.dispatch(menu.closeDrawerView());
 	}
 
 	render() {
@@ -106,12 +86,9 @@ class ReportBumps extends Component {
 						/>
 					</div>
 					<Body 
-						//selectedTrip={this.state.selectedTrip}
-						//onTripSelect={this.onTripSelect}
 						google={this.props.google}
-						isFavoritiesView={this.props.menu.isFavoritiesListView} 
 						isRecordingMode={this.state.isRecordingMode}
-						isCheckTripView={false} 
+						//isCheckTripView={false} 
 						isShareView={this.state.isShareView}
 						/>
 					<NextStepButton 
@@ -124,7 +101,7 @@ class ReportBumps extends Component {
 				</div>
 				<div className="cover" style={{display: this.props.menu.isDrawerView ? "block" : "none"}}>
 					<div className="cover-background" ref="cover" onClick={this.onMenuToggle} id="cover" />
-					<Drawer current={this.props.current} markSelection={this.props.markSelection}/>
+					<Drawer changeView={this.changeView} />
 				</div>
 			</div>
 		);

@@ -3,6 +3,9 @@ import '../../styles/check-trip.css';
 import { HeaderMenu, Drawer, NextStepButton, Body } from '../Shared/index';
 import SearchMenu from './search-menu';
 
+import store from "../../store/store";
+import * as menu from "../../ducks/menu-state";
+
 class CheckTrip extends Component {
 	constructor(props) {
 		super(props);
@@ -58,6 +61,11 @@ class CheckTrip extends Component {
 		this.setState({ [item]: "" });
 	}
 
+	changeView = action => {
+		store.dispatch(menu[action]());
+		store.dispatch(menu.closeDrawerView());
+	}
+
 	render() {
 		let { text, color, isDrawer, isSearchMode, isGuidanceMode, start, end, ratio } = this.state;
 		let drawerDisplay = isDrawer ? "block" : "none";
@@ -98,9 +106,7 @@ class CheckTrip extends Component {
 				</div>
 				<div className="cover" style={{display: drawerDisplay}}>
 					<div className="cover-background" onClick={this.onMenuToggle}  />
-					<Drawer 
-						current={this.props.current} 
-						markSelection={this.props.markSelection} />
+					<Drawer changeView={this.changeView} />
 				</div>
 			</div> 
 		);

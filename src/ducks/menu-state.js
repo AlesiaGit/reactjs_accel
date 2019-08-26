@@ -18,18 +18,18 @@ let initial = {
 	isCheckTripView: false
 };
 
-function helper(state, action) {
-	Object.keys(state).forEach(item => state[item] = (item === action.menuitem) ? true : false);
-	return state;
+function reset(state) {
+	//return Object.keys(state).forEach(item => state[item] = (item === action.menuitem) ? true : false);
+	return Object.keys(state).forEach(item => state[item] = false);
 }
 
 // Reducer
 export default function menu(state = initial, action) {
 	switch (action.type) {
-		case FAVORITIES_LIST_VIEW: return helper(state, action)
-		case SELECTED_TRIP_VIEW: return helper(state, action)
-		case BUMPS_MAP_VIEW: return helper(state, action)
-		case CHECK_TRIP_VIEW: return helper(state, action)
+		case FAVORITIES_LIST_VIEW: return {...reset(state), [action.menuitem]: true};
+		case SELECTED_TRIP_VIEW: return {...reset(state), [action.menuitem]: true};
+		case BUMPS_MAP_VIEW: return {...reset(state), [action.menuitem]: true};
+		case CHECK_TRIP_VIEW: return {...reset(state), [action.menuitem]: true};
 		case DRAWER_VIEW: return { ...state, isDrawerView: action.menuitem }
 		case CLOSE_DRAWER_VIEW: return { ...state, isDrawerView: action.menuitem }
 		default: 

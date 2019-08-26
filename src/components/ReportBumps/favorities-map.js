@@ -3,8 +3,7 @@ import { db } from '../Firebase/index';
 import ShareBlock from './share-block';
 
 import { connect } from "react-redux";
-import store from "../../store/store";
-import { noTripsSelected } from "../../ducks/selected-trip";
+
 
 const mapStateToProps = state => {
     return {
@@ -79,8 +78,6 @@ class FavoritiesMap extends Component {
 	componenWillUnmount = () => {
 		this.trip.setMap(null);
 		this.bumps.forEach(bump => bump.setMap(null));
-		store.dispatch(noTripsSelected());
-		store.getState();
 	}
 	
 	render() {
