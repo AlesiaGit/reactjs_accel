@@ -4,7 +4,8 @@ import { connect } from "react-redux";
 
 const mapStateToProps = state => {
     return {
-        menu: state.menu
+        menu: state.menu,
+        mode: state.mode
     };
 };
 
@@ -64,15 +65,17 @@ class BumpsMap extends Component {
 			this.databaseBumps = this.setBumpsOnMap(this.props.allBumps, this.databaseBumps, "#e34929", 0.8);
 		}
 
-		if (prevProps.isSearchMode !== this.props.isSearchMode && this.props.isSearchMode === false) {
+		if (prevProps.mode.isBuildingRoute !== this.props.mode.isBuildingRoute && this.props.mode.isBuildingRoute === true) {
 			let { start, end, google } = this.props;
-
+			console.log (start, end)
+	
 			if (start !== "") return this.buildRoute({start, end});
 			navigator.geolocation.getCurrentPosition((pos) => this.buildRoute({start: new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude), end}));
 		}
 	}
 
 	buildRoute = endpoints => {
+		console.log(endpoints)
 		let maps = this.props.google.maps;
 		this.directionsDisplay.setMap(this.map);
 

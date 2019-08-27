@@ -1,19 +1,27 @@
 import React, { Component } from 'react';
 import '../../styles/shared.css';
+import { connect } from "react-redux";
+
+const mapStateToProps = state => {
+    return {
+        menu: state.menu
+    };
+};
 
 class NextStepButton extends Component {
 
 	render() {
+		if (this.props.menu.isFavoritiesListView) return null;
+
 		return (
 			<div 
 				className="bottom-ruler-btn" 
-				style={{ backgroundColor: this.props.color, display: this.props.isDisplayed ? "flex" : "none" }} 
-				onClick={() => this.props.toggleButton()} 
-				disabled={!this.props.disableCondition}>
+				style={{ backgroundColor: this.props.color}} 
+				onClick={() => this.props.toggleButton()} >
 				{this.props.text}
 			</div>
 		);
 	}
 }
 
-export default NextStepButton;
+export default connect(mapStateToProps)(NextStepButton);

@@ -2,23 +2,37 @@ import React, { Component } from 'react';
 import '../../styles/check-trip.css';
 import { HeaderMenu, Drawer, NextStepButton, Body } from '../Shared/index';
 import SearchMenu from './search-menu';
+import { connect } from "react-redux";
+
 
 import store from "../../store/store";
 import * as menu from "../../ducks/menu-state";
+import * as mode from "../../ducks/mode";
+
+const mapStateToProps = state => {
+    return {
+        selectedTrip: state.selectedTrip,
+        menu: state.menu,
+        mode: state.mode
+    };
+};
+
+const mapDispatchToProps = (dispatch) => ({
+  stopGuidance: () => dispatch(mode.stopGuidance()),
+});
 
 class CheckTrip extends Component {
 	constructor(props) {
 		super(props);
 
 	    this.state = {
-	    	isDrawer: false,
-	    	isSearchMode: true,
-	    	isGuidanceMode: false,
-	    	text: "Build a route",
-	    	color: "#fbad19",
 	    	start: "",
 	    	end: ""
 	    };
+
+	    store.dispatch(menu.selectCheckTripView())
+	    //store.dispatch(mode.stopGuidance())
+	    this.props.stopGuidance();
 	}
 
 	componentDidMount = () => {
@@ -37,24 +51,26 @@ class CheckTrip extends Component {
     };
 
 	onMenuToggle = () => {
-		this.setState({ isDrawer: !this.state.isDrawer })
+		if (this.props.menu.isDrawerView) return store.dispatch(menu.closeDrawerView());
+		store.dispatch(menu.selectDrawerView());
 	}
 
 	onNextStepButtonToggle = () => {
-		let { isSearchMode, isGuidanceMode } = this.state;
-		if (isSearchMode) return this.setState({ isSearchMode: false, isGuidanceMode: false, text: "Start Guidance", color:  "#757d75" });
-		if (!isGuidanceMode && !isSearchMode) return this.setState({ isSearchMode: false, isGuidanceMode: true, text: "Stop Guidance", color: "#e34929" })
-		if (isGuidanceMode && !isSearchMode) return this.setState({ isSearchMode: true, isGuidanceMode: false, text: "Build a route", color: "#fbad19" })
+		let { isBuildingRoute, isGuidance } = this.props.mode;
+		if (isBuildingRoute) return store.dispatch(mode.startGuidance());
+		if (isGuidance) return store.dispatch(mode.stopGuidance());
+		if (!isGuidance && !isBuildingRoute) return store.dispatch(mode.buildRoute())
 	}
 
 	onSearchButtonToggle = () => {
-		this.setState({ isSearchMode: false, isGuidanceMode: true}, () => this.onNextStepButtonToggle())
+		store.dispatch(mode.stopGuidance());
+		//this.setState({ isSearchMode: false, isGuidanceMode: true}, () => this.onNextStepButtonToggle())
 	}
 
 	handleChange = e => {
 		let { name, value } = e.target;
 
-		this.setState({	[name]: value });
+		this.setState({	[name]: value }, console.log(this.state));
 	}
 
 	clearSearch = item => {
@@ -67,9 +83,11 @@ class CheckTrip extends Component {
 	}
 
 	render() {
-		let { text, color, isDrawer, isSearchMode, isGuidanceMode, start, end, ratio } = this.state;
-		let drawerDisplay = isDrawer ? "block" : "none";
-		let searchBtnDisplay = (!isSearchMode && !isGuidanceMode) ? "flex" : "none";
+		let { start, end } = this.state;
+		let drawerDisplay = this.props.menu.isDrawerView ? "block" : "none";
+		let searchButtonDisplay = (this.props.mode.isBuildingRoute) ? "flex" : "none";
+
+		let {color, text} = this.props.mode;
 
 		return (
 			<div className="wrapper">
@@ -84,19 +102,19 @@ class CheckTrip extends Component {
 							clearSearch={this.clearSearch}
 							start={start}
 							end={end}
-							isSearchMode={isSearchMode} 
+							//isSearchMode={isSearchMode} 
 							preventResize={this.preventResize}
 							/>
 						<div className="directions-btn" 
-							style={{display: searchBtnDisplay}} 
+							style={{display: searchButtonDisplay}} 
 							onClick={this.onSearchButtonToggle} />
 					</div>
 					<Body 
-						isSearchMode={isSearchMode} 
-						isGuidanceMode={isGuidanceMode}
+						//isSearchMode={isSearchMode} 
+						//isGuidanceMode={isGuidanceMode}
 						start={start} 
 						end={end} 
-						isCheckTripView={true}
+						//isCheckTripView={true}
 						/>
 					<NextStepButton 
 						isDisplayed={true}
@@ -113,4 +131,4 @@ class CheckTrip extends Component {
 	}
 }
 
-export default CheckTrip;
+export default connect(mapStateToProps, mapDispatchToProps)(CheckTrip);

@@ -1,8 +1,15 @@
 import React, { Component } from 'react';
+import { connect } from "react-redux";
+
+const mapStateToProps = state => {
+    return {
+        mode: state.mode
+    };
+};
 
 class SearchMenu extends Component {
 	render() {
-		let displaySearch = (this.props.isSearchMode) ? "flex" : "none";
+		let displaySearch = (!this.props.mode.isGuidance && !this.props.mode.isBuildingRoute) ? "flex" : "none";
 		return (
 			<div className="search-menu" style={{display: displaySearch}} >
 				<div className="from-to-icon"></div>
@@ -28,4 +35,4 @@ class SearchMenu extends Component {
 	}
 }
 
-export default SearchMenu;
+export default connect(mapStateToProps)(SearchMenu);

@@ -90,7 +90,7 @@ class Body extends Component {
 			}
 	   	}
 
-		if (prevProps.isShareView !== this.props.isShareView && this.props.isShareView === true) {
+		if (prevProps.menu.isShareView !== this.props.menu.isShareView && this.props.menu.isShareView === true) {
 	   		this.addTripToShared();
 	   	}
 
@@ -271,7 +271,7 @@ class Body extends Component {
 	render() {
 		let { bumps, angle, move, path, allBumps, favorities, dimentions, currentLocation } = this.state;
 		let { google, isSearchMode, start, end, isCheckTripView, isRecordingMode, selectedTrip, isGuidanceMode } = this.props;
-		
+		console.log('bw->', start, end)
 		if (this.props.menu.isFavoritiesListView) {
 			return (
 				<FavoritiesList 
@@ -298,7 +298,7 @@ class Body extends Component {
 						bumps={bumps}
 						allBumps={allBumps}
 						//isCheckTripView={true}
-						isSearchMode={isSearchMode} 
+						//isSearchMode={isSearchMode} 
 						start={start} 
 						end={end} >
 						<Car 
