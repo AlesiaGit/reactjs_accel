@@ -21,6 +21,7 @@ class FavoritiesMap extends Component {
 	}
 
 	componentDidMount = () => {
+
 		this.loadMap();
 	}
 

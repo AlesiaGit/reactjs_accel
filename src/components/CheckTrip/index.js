@@ -17,8 +17,13 @@ const mapStateToProps = state => {
     };
 };
 
-const mapDispatchToProps = (dispatch) => ({
+const mapDispatchToProps = dispatch => ({
+  closeDrawerView: () => dispatch(menu.closeDrawerView()),
+  selectDrawerView: () => dispatch(menu.selectDrawerView()),
+  selectCheckTripView: () => dispatch(menu.selectCheckTripView()),
+  startGuidance: () => dispatch(mode.startGuidance()),
   stopGuidance: () => dispatch(mode.stopGuidance()),
+  buildRoute: () => dispatch(mode.buildRoute()),
 });
 
 class CheckTrip extends Component {
@@ -29,14 +34,12 @@ class CheckTrip extends Component {
 	    	start: "",
 	    	end: ""
 	    };
-
-	    store.dispatch(menu.selectCheckTripView())
-	    //store.dispatch(mode.stopGuidance())
-	    this.props.stopGuidance();
 	}
 
 	componentDidMount = () => {
 		this.props.setStatusBarColor("#4c88b7");
+		this.props.selectCheckTripView();
+	    this.props.stopGuidance();
 	}
 
 	preventResize = () => {
@@ -51,26 +54,25 @@ class CheckTrip extends Component {
     };
 
 	onMenuToggle = () => {
-		if (this.props.menu.isDrawerView) return store.dispatch(menu.closeDrawerView());
-		store.dispatch(menu.selectDrawerView());
+		let isDrawerView = this.props.menu.isDrawerView;
+		if (isDrawerView) return this.props.closeDrawerView();
+		this.props.selectDrawerView();
 	}
 
 	onNextStepButtonToggle = () => {
 		let { isBuildingRoute, isGuidance } = this.props.mode;
-		if (isBuildingRoute) return store.dispatch(mode.startGuidance());
-		if (isGuidance) return store.dispatch(mode.stopGuidance());
-		if (!isGuidance && !isBuildingRoute) return store.dispatch(mode.buildRoute())
+		if (isBuildingRoute) return this.props.startGuidance();
+		if (isGuidance) return this.props.stopGuidance();
+		if (!isGuidance && !isBuildingRoute) return this.props.buildRoute();
 	}
 
 	onSearchButtonToggle = () => {
-		store.dispatch(mode.stopGuidance());
-		//this.setState({ isSearchMode: false, isGuidanceMode: true}, () => this.onNextStepButtonToggle())
+		this.props.stopGuidance();
 	}
 
 	handleChange = e => {
 		let { name, value } = e.target;
-
-		this.setState({	[name]: value }, console.log(this.state));
+		this.setState({	[name]: value });
 	}
 
 	clearSearch = item => {
@@ -79,7 +81,7 @@ class CheckTrip extends Component {
 
 	changeView = action => {
 		store.dispatch(menu[action]());
-		store.dispatch(menu.closeDrawerView());
+		this.props.closeDrawerView();
 	}
 
 	render() {
@@ -102,22 +104,14 @@ class CheckTrip extends Component {
 							clearSearch={this.clearSearch}
 							start={start}
 							end={end}
-							//isSearchMode={isSearchMode} 
 							preventResize={this.preventResize}
 							/>
 						<div className="directions-btn" 
 							style={{display: searchButtonDisplay}} 
 							onClick={this.onSearchButtonToggle} />
 					</div>
-					<Body 
-						//isSearchMode={isSearchMode} 
-						//isGuidanceMode={isGuidanceMode}
-						start={start} 
-						end={end} 
-						//isCheckTripView={true}
-						/>
+					<Body start={start} end={end} />
 					<NextStepButton 
-						isDisplayed={true}
 						color={color} 
 						toggleButton={this.onNextStepButtonToggle}
 						text={text}	/>	

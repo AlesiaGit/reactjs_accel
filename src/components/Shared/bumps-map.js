@@ -2,12 +2,25 @@ import React, { Component } from 'react';
 import * as helpers from '../../helpers/index';
 import { connect } from "react-redux";
 
+import store from "../../store/store";
+import * as trip from "../../ducks/trip";
+import * as dom from "../../ducks/dom";
+
 const mapStateToProps = state => {
     return {
         menu: state.menu,
-        mode: state.mode
+        mode: state.mode,
+        trip: state.trip,
+        dom: state.dom
     };
 };
+
+const mapDispatchToProps = {
+ 	addBumps: trip.addBumps,
+	updateLocation: trip.updateLocation,
+	resetTrip: trip.resetTrip
+};
+
 
 class BumpsMap extends Component {
 	constructor(props) {
@@ -37,28 +50,30 @@ class BumpsMap extends Component {
 					this.setState({
 						currentLocation: {lat: coords.latitude, lng: coords.longitude},
 						isCurrentPositionReceived: true
-	                }, this.props.updateLocationData(pos)) //update wrapper data
-				})
+	                }, () => this.props.updateLocationData(pos));
+				});
 			}
 		}
 
 		this.loadMap();
+
 	}
 
 	componentDidUpdate(prevProps, prevState) {
 		if (prevProps.google !== this.props.google) {
 			this.loadMap();
 		}
+
 		if (prevState.currentLocation !== this.state.currentLocation) {
 			this.recenterMap(this.state.currentLocation);
 		}
 
-		if ((prevProps.currentLocation !== this.props.currentLocation) && (this.state.isCurrentPositionReceived && this.props.isRecordingMode)) {
-			this.recenterMap(this.props.currentLocation);
+		if ((prevProps.trip.currentLocation !== this.props.trip.currentLocation) && (this.state.isCurrentPositionReceived && this.props.mode.isRecording)) {
+			this.recenterMap(this.props.trip.currentLocation);
 		}
 
-		if (prevProps.bumps !== this.props.bumps) {
-			this.tripBumps = this.setBumpsOnMap(this.props.bumps, this.tripBumps, "#fbad19", 0.8);
+		if (prevProps.trip.bumps !== this.props.trip.bumps) {
+			this.tripBumps = this.setBumpsOnMap(this.props.trip.bumps, this.tripBumps, "#fbad19", 0.8);
 		}
 
 		if (prevProps.allBumps !== this.props.allBumps && !this.props.menu.isCheckTripView) {
@@ -67,12 +82,13 @@ class BumpsMap extends Component {
 
 		if (prevProps.mode.isBuildingRoute !== this.props.mode.isBuildingRoute && this.props.mode.isBuildingRoute === true) {
 			let { start, end, google } = this.props;
-			console.log (start, end)
 	
 			if (start !== "") return this.buildRoute({start, end});
 			navigator.geolocation.getCurrentPosition((pos) => this.buildRoute({start: new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude), end}));
 		}
 	}
+
+
 
 	buildRoute = endpoints => {
 		console.log(endpoints)
@@ -209,13 +225,10 @@ class BumpsMap extends Component {
 		return markersArray;
 	}
 
-	updateCurrent = (location) => {
-		this.props.updateLocationData(location);
-	}
-
 	componentWillUnmount = () => {
 		this.deleteMarkers(this.tripBumps);
 		this.deleteMarkers(this.databaseBumps);
+
 	}
 
 	renderChildren = () => {
@@ -227,17 +240,16 @@ class BumpsMap extends Component {
 				map: this.map,
 				google: this.props.google,
 				mapCenter: this.state.currentLocation,
-				currentLocation: this.props.currentLocation,
+				currentLocation: this.props.trip.currentLocation,
 				isCurrentPositionReceived: this.state.isCurrentPositionReceived
 			});
 		})
 	}
 
 	render() {
-		let { width, height } = this.props.dimentions;
 		let style = {
-			width: width + "px", 
-			height: height +"px", 
+			width: this.props.dom.width + "px", 
+			height: this.props.dom.height +"px", 
 			position: "relative"
 		};
 
@@ -250,7 +262,7 @@ class BumpsMap extends Component {
 	}
 }
 
-export default connect(mapStateToProps)(BumpsMap);
+export default connect(mapStateToProps, mapDispatchToProps)(BumpsMap);
 
 
 BumpsMap.defaultProps = {

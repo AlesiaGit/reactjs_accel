@@ -11,7 +11,8 @@ const mapStateToProps = state => {
 class NextStepButton extends Component {
 
 	render() {
-		if (this.props.menu.isFavoritiesListView) return null;
+		let { isFavoritiesListView, isSelectedTripView } = this.props.menu;
+		if (isFavoritiesListView || isSelectedTripView) return null;
 
 		return (
 			<div 

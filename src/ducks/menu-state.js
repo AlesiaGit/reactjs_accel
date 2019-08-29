@@ -14,22 +14,38 @@ let initial = {
 	isFavoritiesListView: false,
 	isSelectedTripView: false,
 	isDrawerView: false,
-	isBumpsMapView: true,
+	isBumpsMapView: false,
 	isShareView: false,
-	isCheckTripView: false
+	isCheckTripView: false,
+	title: '',
+	iconleft: '',
+	iconright: ''
 };
-
-function reset(state) {
-	return Object.keys(state).forEach(item => state[item] = false);
-}
 
 // Reducer
 export default function menu(state = initial, action) {
 	switch (action.type) {
-		case FAVORITIES_LIST_VIEW: return {...reset(state), [action.menuitem]: true};
-		case SELECTED_TRIP_VIEW: return {...reset(state), [action.menuitem]: true};
-		case BUMPS_MAP_VIEW: return {...reset(state), [action.menuitem]: true};
-		case CHECK_TRIP_VIEW: return {...reset(state), [action.menuitem]: true};
+		case FAVORITIES_LIST_VIEW: 
+			return {...initial, 
+				[action.menuitem]: true,
+				title: action.title, 
+				iconleft: action.iconleft};
+		case SELECTED_TRIP_VIEW: 
+			return {...initial, 
+				[action.menuitem]: true, 
+				title: action.title, 
+				iconleft: action.iconleft, 
+				iconright: action.iconright};
+		case BUMPS_MAP_VIEW: 
+			return {...initial, 
+				[action.menuitem]: true,
+				title: action.title, 
+				iconleft: action.iconleft};
+		case CHECK_TRIP_VIEW:  
+			return {...initial, 
+				[action.menuitem]: true,
+				title: action.title, 
+				iconleft: action.iconleft};
 		case DRAWER_VIEW: return { ...state, isDrawerView: action.menuitem }
 		case CLOSE_DRAWER_VIEW: return { ...state, isDrawerView: action.menuitem }
 		case SHARE_VIEW: return { ...state, isShareView: action.menuitem }
@@ -43,14 +59,19 @@ export default function menu(state = initial, action) {
 export function selectFavoritiesListView() {
 	return {
 		type: FAVORITIES_LIST_VIEW,
-		menuitem: 'isFavoritiesListView'
+		menuitem: 'isFavoritiesListView',
+		title: 'Report a bump',
+		iconleft: 'burger-icon',
 	}
 }
 
 export function selectTripView() {
 	return {
 		type: SELECTED_TRIP_VIEW,
-		menuitem: 'isSelectedTripView'
+		menuitem: 'isSelectedTripView',
+		title: 'Back to list',
+		iconleft: 'back-arrow',
+		iconright: 'share-icon'
 	}
 }
 
@@ -71,7 +92,9 @@ export function closeDrawerView() {
 export function selectBumpsMapView() {
 	return {
 		type: BUMPS_MAP_VIEW,
-		menuitem: 'isBumpsMapView'
+		menuitem: 'isBumpsMapView',
+		title: 'Report a bump',
+		iconleft: 'burger-icon'
 	}
 }
 
@@ -92,6 +115,8 @@ export function closeShareView() {
 export function selectCheckTripView() {
 	return {
 		type: CHECK_TRIP_VIEW,
-		menuitem: 'isCheckTripView'
+		menuitem: 'isCheckTripView',
+		title: 'Check your trip',
+		iconleft: 'burger-icon'
 	}
 }

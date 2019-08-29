@@ -11,43 +11,39 @@ export const STOP_GUIDANCE = "bumpyroads/mode/STOP_GUIDANCE";
 
 let initial = {
 	isRecording: false,
-	isBuildRoute: false,
+	isBuildingRoute: false,
 	isGuidance: false,
 	color: '#757d75',
 	text: 'Start Recording'
-	// recording: {
-	// 	on: false,
-	// 	color: '#757d75',
-	// 	text: 'Start Recording'},
-	// buildingRoute: {
-	// 	on: false,
-	// 	color: '#fbad19',
-	// 	text: 'Build a route'},
-	// guidance: {
-	// 	on: false,
-	// 	color: '#757d75',
-	// 	text: 'Start Guidance'}
 };
 
-function reset(state) {
-	return Object.keys(state).forEach(item => state[item] = initial[item]);
-}
-
-
-// Reducer
 export default function mode(state = initial, action) {
 	switch (action.type) {
-		case RECORDING: return {...reset(state), [action.mode]: action.on, color: action.color, text: action.text }
-		case STOP_RECORDING: return {...reset(state, action), [action.mode]: action.on, color: action.color, text: action.text }
-		case BUILDING_ROUTE: return {...reset(state, action),[action.mode]: action.on, color: action.color, text: action.text }
-		case GUIDANCE: return {...reset(state, action), [action.mode]: action.on, color: action.color, text: action.text }
-		case STOP_GUIDANCE: return {...reset(state, action), [action.mode]: action.on, color: action.color, text: action.text }
+		case RECORDING: 
+			return {...initial, 
+				[action.mode]: action.on, 
+				color: action.color, 
+				text: action.text }
+		case STOP_RECORDING: return {...initial }
+		case BUILDING_ROUTE: 
+			return {...initial,
+				[action.mode]: action.on, 
+				text: action.text }
+		case GUIDANCE: 
+			return {...initial, 
+				[action.mode]: action.on, 
+				color: action.color, 
+				text: action.text }
+		case STOP_GUIDANCE: 
+			return {...initial, 
+				[action.mode]: action.on, 
+				color: action.color, 
+				text: action.text }
 		default: 
 			return state;
 	}
 }
 
-// Action creators
 export function startRecording() {
 	return {
 		type: RECORDING,
@@ -55,26 +51,12 @@ export function startRecording() {
 		on: true,
 		color: "#e34929",
 		text: 'Stop Recording'
-		// mode: {
-		// 	on: true,
-		// 	color: '#e34929',
-		// 	text: 'Stop Recording'
-		// }
 	}
 }
 
 export function stopRecording() {
 	return {
-		type: STOP_RECORDING,
-		mode: 'isRecording',
-		on: false,
-		color: "#757d75",
-		text: 'Start Recording'
-		// mode: {
-		// 	on: false,
-		// 	color: '#757d75',
-		// 	text: 'Start Recording' 
-		// }
+		type: STOP_RECORDING
 	}
 }
 
@@ -83,13 +65,7 @@ export function buildRoute() {
 		type: BUILDING_ROUTE,
 		mode: 'isBuildingRoute',
 		on: true,
-		color: "#757d75",
 		text: 'Start Guidance'
-		// mode: {
-		// 	on: true,
-		// 	color: '#757d75',
-		// 	text: 'Start Guidance' 
-		// }
 	}
 }
 
@@ -100,11 +76,6 @@ export function startGuidance() {
 		on: true,
 		color: "#e34929",
 		text: 'Stop Guidance'
-		// mode: {
-		// 	on: true,
-		// 	color: '#e34929',
-		// 	text: 'Stop Guidance' 
-		// }
 	}
 }
 
@@ -115,10 +86,5 @@ export function stopGuidance() {
 		on: false,
 		color: "#fbad19",
 		text: 'Build a route'
-		// mode: {
-		// 	on: true,
-		// 	color: '#fbad19',
-		// 	text: 'Build a route' 
-		// }
 	}
 }

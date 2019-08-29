@@ -12,20 +12,15 @@ const mapStateToProps = state => {
 
 class HeaderMenu extends Component {
 	render() {
-
-		let title = this.props.menu.isSelectedTripView ? "Back to list" : "Report a bump";
-		let iconleft = this.props.menu.isSelectedTripView ? "back-arrow" : "burger-icon"; 
-		let iconright = this.props.menu.isSelectedTripView ? "share-icon" : "";
-
 		return (
 				<div className="header-menu" >
 					<div className="header-left-menu">
-						<div className={`header-menu-icon ${iconleft}`} 
+						<div className={`header-menu-icon ${this.props.menu.iconleft}`} 
 							onClick={() => this.props.onMenuToggle()}/>
-						<div className="page-title">{title}</div>
+						<div className="page-title">{this.props.menu.title}</div>
 					</div>
 					<div className="header-right-menu" >
-						<div className={`header-menu-icon ${iconright}`}  
+						<div className={`header-menu-icon ${this.props.menu.iconright}`}  
 							onClick={() => this.props.onRightMenuToggle()}/>
 					</div>
 				</div>

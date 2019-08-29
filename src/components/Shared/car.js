@@ -1,5 +1,18 @@
 import { Component } from 'react';
-//import car from '../../images/car.svg';
+import store from "../../store/store";
+import * as trip from "../../ducks/trip";
+import { connect } from "react-redux";
+
+const mapStateToProps = state => {
+    return {
+        trip: state.trip,
+        mode: state.mode
+    };
+};
+
+const mapDispatchToProps = {
+	resetMove: trip.resetMove
+};
 
 var elements = [
 {path: "M69.9,36c0.3-9.3,0.3-9.1,0.3-9.1c0-0.2,0.7-7.9-0.6-15.3c-1.3-7.5-9.7-9.5-9.7-9.5l-0.4,0l-8.9-0.3v0l-8.8,0.3  l-0.4,0c0,0-8.4,2.1-9.7,9.5c-1.3,7.4-0.6,15.1-0.6,15.3c0,0,0-0.3,0.3,9.1c0.4,9.8-0.6,34-0.5,37c0.1,2.9-0.2,9.2,0.4,10.8  c0.6,1.6,2.6,9.6,2.6,9.6s3.2,6.2,16.8,5.3v0c13.5,0.9,16.7-5.3,16.7-5.3s2-8,2.6-9.6c0.6-1.6,0.2-7.9,0.4-10.8  C70.5,70,69.5,45.8,69.9,36L69.9,36z", fill:"#D14C32"},
@@ -42,12 +55,17 @@ class Car extends Component {
 	}
 
 	componentDidUpdate = (prevProps) => {
-		let {map, angle, move, isCurrentPositionReceived} = this.props;
-		let speed = this.props.currentLocation.speed;
+		let { map, isCurrentPositionReceived} = this.props;
+		let speed = this.props.trip.currentLocation.speed;
+		let { angle, move } = this.props.trip;
 
 		if (map !== prevProps.map || (speed > 5 && (angle !== prevProps.angle || move > 5)) || isCurrentPositionReceived !== prevProps.isCurrentPositionReceived) {
 			this.renderMarker();
 		}
+
+		if (prevProps.trip.path !== this.props.trip.path && this.props.trip.path.length) {
+		 	this.renderMarker();
+		 }
 	}
 
 	componentWillUnmount = () => {
@@ -65,7 +83,8 @@ class Car extends Component {
 	renderMarker = () => {
 		this.removeMarker();
 
-		let {map, google, mapCenter, currentLocation} = this.props;
+		let {map, google, mapCenter } = this.props;
+		let currentLocation = this.props.trip.currentLocation;
 		let position = currentLocation.lat ? {lat: currentLocation.lat, lng: currentLocation.lng} : undefined;
 
 		let pos = position || mapCenter;
@@ -79,8 +98,7 @@ class Car extends Component {
                 fillOpacity: 1.0,
                 scale: 0.4,
                 anchor: new google.maps.Point(50, 50),
-    			//scaledSize: new google.maps.Size(20, 20),
-				rotation: this.props.angle
+				rotation: this.props.trip.angle
 			};
 
 			const pref = {
@@ -94,6 +112,8 @@ class Car extends Component {
 		});
 
 	    this.props.resetMove();
+
+
 	}
 
 	render() {
@@ -101,4 +121,4 @@ class Car extends Component {
 	}
 }
 
-export default Car;
+export default connect(mapStateToProps, mapDispatchToProps)(Car);

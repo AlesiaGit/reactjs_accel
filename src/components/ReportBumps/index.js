@@ -9,7 +9,6 @@ import * as helpers from '../../helpers/index';
 import ShareBlock from './share-block';
 import { db } from '../Firebase/index';
 
-//store
 import store from "../../store/store";
 import * as trip from "../../ducks/selected-trip";
 import * as menu from "../../ducks/menu-state";
@@ -23,6 +22,24 @@ const mapStateToProps = state => {
     };
 };
 
+const mapDispatchToProps = {
+  closeDrawerView: menu.closeDrawerView,
+  selectDrawerView: menu.selectDrawerView,
+  selectBumpsMapView: menu.selectBumpsMapView,
+  selectCheckTripView: menu.selectCheckTripView,
+  selectFavoritiesListView: menu.selectFavoritiesListView,
+  selectTripView: menu.selectTripView,
+  selectShareView: menu.selectShareView,
+  startRecording: mode.startRecording,
+  stopRecording: mode.stopRecording,
+  startGuidance: mode.startGuidance,
+  stopGuidance: mode.stopGuidance,
+  buildRoute: mode.buildRoute,
+  noTripsSelected: trip.noTripsSelected,
+  selectTrip: trip.selectTrip,
+ 	
+};
+
 class ReportBumps extends Component {
 	constructor(props) {
 		super(props);
@@ -34,42 +51,35 @@ class ReportBumps extends Component {
 
 	componentDidMount = () => {
 		this.props.setStatusBarColor("#4c88b7");
+		this.props.selectBumpsMapView();
 	}
 
 	onMenuToggle = () => {
 		let { isDrawerView, isSelectedTripView } = this.props.menu;
-		if (isDrawerView) return store.dispatch(menu.closeDrawerView());
+		if (isDrawerView) return this.props.closeDrawerView();
 		
 		if (isSelectedTripView) {
-			store.dispatch(trip.noTripsSelected());
-			store.dispatch(menu.selectFavoritiesListView());
+			this.props.noTripsSelected();
+			this.props.selectFavoritiesListView();
 			return;
 		} 
 
-		return store.dispatch(menu.selectDrawerView());
+		return this.props.selectDrawerView();
 	}
 
 	toggleRecording = () => {
-		if(this.props.mode.isRecording) {
-
-			store.dispatch(mode.stopRecording());
-			console.log(store.getState())
-		} else {
-			store.dispatch(mode.startRecording())
-			console.log(store.getState())
-		}
-
-		
+		if(this.props.mode.isRecording) return this.props.stopRecording();
+		this.props.startRecording();
 	}
 
 	onRightMenuToggle = () => {
-		if(this.props.menu.isShareView) return store.dispatch(menu.closeShareView());
-		store.dispatch(menu.selectShareView())
+		if(this.props.menu.isShareView) return this.props.closeShareView();
+		this.props.selectShareView();
 	}
 
 	onSubmenuSelect = condition => {
 		const handlerName = `select${helpers.camelize(condition)}View`;
-		store.dispatch(menu[handlerName]());
+		this.props[handlerName]();
 	}
 
 	markActiveTab = condition => {
@@ -78,8 +88,8 @@ class ReportBumps extends Component {
 	}
 
 	changeView = action => {
-		store.dispatch(menu[action]());
-		store.dispatch(menu.closeDrawerView());
+		this.props[action]();
+		this.props.closeDrawerView();
 	}
 
 	render() {
@@ -98,13 +108,11 @@ class ReportBumps extends Component {
 							markActiveTab={this.markActiveTab}
 						/>
 					</div>
-					<Body isRecordingMode={this.state.isRecordingMode} />
+					<Body />
 					<NextStepButton 
 						color={color}
 						text={text}
-						//data={nextStepButtonState}
-						toggleButton={this.toggleRecording}
-						/>
+						toggleButton={this.toggleRecording}	/>
 					<ShareBlock />
 				</div>
 				<div className="cover" style={{display: coverDisplay}}>
@@ -116,4 +124,4 @@ class ReportBumps extends Component {
 	}
 }
 
-export default connect(mapStateToProps)(ReportBumps);
+export default connect(mapStateToProps, mapDispatchToProps)(ReportBumps);
