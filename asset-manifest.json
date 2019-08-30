@@ -1,17 +1,17 @@
 {
   "files": {
-    "main.css": "/reactjs_accel/static/css/main.c84a98fb.chunk.css",
-    "main.js": "/reactjs_accel/static/js/main.53413a69.chunk.js",
-    "main.js.map": "/reactjs_accel/static/js/main.53413a69.chunk.js.map",
+    "main.css": "/reactjs_accel/static/css/main.c4de2299.chunk.css",
+    "main.js": "/reactjs_accel/static/js/main.3deed69d.chunk.js",
+    "main.js.map": "/reactjs_accel/static/js/main.3deed69d.chunk.js.map",
     "runtime~main.js": "/reactjs_accel/static/js/runtime~main.dd179d6e.js",
     "runtime~main.js.map": "/reactjs_accel/static/js/runtime~main.dd179d6e.js.map",
-    "static/js/2.1e07e143.chunk.js": "/reactjs_accel/static/js/2.1e07e143.chunk.js",
-    "static/js/2.1e07e143.chunk.js.map": "/reactjs_accel/static/js/2.1e07e143.chunk.js.map",
+    "static/js/2.bb9eea08.chunk.js": "/reactjs_accel/static/js/2.bb9eea08.chunk.js",
+    "static/js/2.bb9eea08.chunk.js.map": "/reactjs_accel/static/js/2.bb9eea08.chunk.js.map",
     "index.html": "/reactjs_accel/index.html",
-    "precache-manifest.86e29f6fef11c633c1c8564ae704f55c.js": "/reactjs_accel/precache-manifest.86e29f6fef11c633c1c8564ae704f55c.js",
+    "precache-manifest.18a75d1ff961c426bd60c18cfa6256b2.js": "/reactjs_accel/precache-manifest.18a75d1ff961c426bd60c18cfa6256b2.js",
     "service-worker.js": "/reactjs_accel/service-worker.js",
-    "static/css/main.c84a98fb.chunk.css.map": "/reactjs_accel/static/css/main.c84a98fb.chunk.css.map",
+    "static/css/main.c4de2299.chunk.css.map": "/reactjs_accel/static/css/main.c4de2299.chunk.css.map",
     "static/media/start.css": "/reactjs_accel/static/media/cover-road.3b46a15c.jpg",
-    "static/media/shared.css": "/reactjs_accel/static/media/drawer-logo.be5bb7aa.png"
+    "static/media/shared.css": "/reactjs_accel/static/media/share-icon.af0090bc.png"
   }
 }
