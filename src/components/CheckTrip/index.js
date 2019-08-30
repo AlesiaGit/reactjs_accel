@@ -1,30 +1,32 @@
 import React, { Component } from 'react';
 import '../../styles/check-trip.css';
-import { HeaderMenu, Drawer, NextStepButton, Body } from '../Shared/index';
+import { HeaderMenu, Drawer, NextStepButton, Body } from '../_common/index';
 import SearchMenu from './search-menu';
 import { connect } from "react-redux";
-
 
 import store from "../../store/store";
 import * as menu from "../../ducks/menu-state";
 import * as mode from "../../ducks/mode";
+import * as dom from "../../ducks/dom";
 
 const mapStateToProps = state => {
     return {
         selectedTrip: state.selectedTrip,
         menu: state.menu,
-        mode: state.mode
+        mode: state.mode,
+        dom: state.dom
     };
 };
 
-const mapDispatchToProps = dispatch => ({
-  closeDrawerView: () => dispatch(menu.closeDrawerView()),
-  selectDrawerView: () => dispatch(menu.selectDrawerView()),
-  selectCheckTripView: () => dispatch(menu.selectCheckTripView()),
-  startGuidance: () => dispatch(mode.startGuidance()),
-  stopGuidance: () => dispatch(mode.stopGuidance()),
-  buildRoute: () => dispatch(mode.buildRoute()),
-});
+const mapDispatchToProps = {
+	closeDrawerView: menu.closeDrawerView,
+	selectDrawerView: menu.selectDrawerView,
+	selectCheckTripView: menu.selectCheckTripView,
+	startGuidance: mode.startGuidance,
+	stopGuidance: mode.stopGuidance,
+	buildRoute: mode.buildRoute,
+	changeBarColor: dom.changeBarColor
+};
 
 class CheckTrip extends Component {
 	constructor(props) {
@@ -37,26 +39,24 @@ class CheckTrip extends Component {
 	}
 
 	componentDidMount = () => {
-		this.props.setStatusBarColor("#4c88b7");
+		this.props.changeBarColor("#4c88b7");
 		this.props.selectCheckTripView();
 	    this.props.stopGuidance();
 	}
 
 	preventResize = () => {
-        document
-            .querySelector("meta[name=viewport]")
-            .setAttribute(
-                "content",
-                "width=device-width, height=" +
-                    window.innerWidth / this.props.ratio +
-                    ", user-scalable=no, initial-scale=1.0, maximum-scale=1.0"
-            );
-    };
+		let { width, height } = this.props.dom;
+		let ratio = width / height;
+		let newHeight = window.innerHeight / ratio;
+        document.querySelector("meta[name=viewport]")
+        .setAttribute("content", `"width=device-width, height=${newHeight}, user-scalable=no, initial-scale=1.0, maximum-scale=1.0"`);
+    }
 
-	onMenuToggle = () => {
+	onLeftMenuToggle = () => {
 		let isDrawerView = this.props.menu.isDrawerView;
 		if (isDrawerView) return this.props.closeDrawerView();
 		this.props.selectDrawerView();
+		//console.log(store.getState())
 	}
 
 	onNextStepButtonToggle = () => {
@@ -70,38 +70,29 @@ class CheckTrip extends Component {
 		this.props.stopGuidance();
 	}
 
-	handleChange = e => {
+	handleInputChange = e => {
 		let { name, value } = e.target;
 		this.setState({	[name]: value });
 	}
 
-	clearSearch = item => {
+	clearInput = item => {
 		this.setState({ [item]: "" });
-	}
-
-	changeView = action => {
-		store.dispatch(menu[action]());
-		this.props.closeDrawerView();
 	}
 
 	render() {
 		let { start, end } = this.state;
-		let drawerDisplay = this.props.menu.isDrawerView ? "block" : "none";
+		let coverDisplay = this.props.menu.isDrawerView ? "block" : "none";
 		let searchButtonDisplay = (this.props.mode.isBuildingRoute) ? "flex" : "none";
-
 		let {color, text} = this.props.mode;
 
 		return (
 			<div className="wrapper">
 				<div className="main">
 					<div className="header">
-						<HeaderMenu 
-							title={"Check your trip"} 
-							icon={"burger-icon"} 
-							onMenuToggle={this.onMenuToggle} />
+						<HeaderMenu onLeftMenuToggle={this.onLeftMenuToggle} />
 						<SearchMenu 
-							handleChange={this.handleChange} 
-							clearSearch={this.clearSearch}
+							handleChange={this.handleInputChange} 
+							clearInput={this.clearInput}
 							start={start}
 							end={end}
 							preventResize={this.preventResize}
@@ -116,9 +107,9 @@ class CheckTrip extends Component {
 						toggleButton={this.onNextStepButtonToggle}
 						text={text}	/>	
 				</div>
-				<div className="cover" style={{display: drawerDisplay}}>
+				<div className="cover" style={{display: coverDisplay}}>
 					<div className="cover-background" onClick={this.onMenuToggle}  />
-					<Drawer changeView={this.changeView} />
+					<Drawer />
 				</div>
 			</div> 
 		);

@@ -9,7 +9,7 @@ const mapStateToProps = state => {
     };
 };
 
-class FavoritiesMap extends Component {
+class SelectedTripMap extends Component {
 	constructor(props) {
 		super(props);
 
@@ -80,6 +80,8 @@ class FavoritiesMap extends Component {
 	
 	render() {
 		if (!this.props.selectedTrip) return;
+
+		console.log(this.props)
 		
 		let { width, height } = this.props.dom;
 
@@ -96,4 +98,4 @@ class FavoritiesMap extends Component {
 	}
 }
 
-export default connect(mapStateToProps)(FavoritiesMap);
+export default connect(mapStateToProps)(SelectedTripMap);

@@ -1,10 +1,17 @@
 import React, { Component } from 'react';
+import { connect } from "react-redux";
 import { Link } from 'react-router-dom';
 import '../../styles/start.css';
 
+import * as dom from "../../ducks/dom";
+
+const mapDispatchToProps = {
+  changeBarColor: dom.changeBarColor
+};
+
 class Start extends Component {
 	componentDidMount = () => {
-		this.props.setStatusBarColor("#fbad19");
+		this.props.changeBarColor("#fbad19");
 	}
 	
 	render() {
@@ -25,7 +32,4 @@ class Start extends Component {
 	}
 }
 
-export default Start;
-
-
-//<div className="bottom-ruler-btn" onClick={() => {this.props.permissionGranted()}}>get started</div>
+export default connect(null, mapDispatchToProps)(Start);

@@ -4,6 +4,7 @@
   "private": true,
   "homepage": "https://alesiagit.github.io/reactjs_accel",
   "dependencies": {
+    "@material-ui/core": "^4.3.3",
     "firebase": "^6.2.4",
     "gh-pages": "^2.0.1",
     "google-map-react": "^1.1.4",

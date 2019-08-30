@@ -1,7 +1,7 @@
 //trip.js
 
 // Actions
-export const ADD_BUMPS = "bumpyroads/bumpTrip/ADD_BUMPS";
+export const ADD_TRIP_BUMPS = "bumpyroads/bumpTrip/ADD_BUMPS";
 export const UPDATE_LOCATION = "bumpyroads/bumpTrip/UPDATE_LOCATION";
 export const RESET_TRIP = "bumpyroads/bumpTrip/RESET_TRIP";
 export const RESET_MOVE = "bumpyroads/bumpTrip/RESET_MOVE";
@@ -21,7 +21,7 @@ let initial = {
 // Reducer
 export default function trip(state = initial, action) {
 	switch (action.type) {
-		case ADD_BUMPS: 
+		case ADD_TRIP_BUMPS: 
 			return { ...state, 
 				bumps: [...state.bumps, action.data.bumps],
 				previousAcceleration: action.data.previousAcceleration }
@@ -41,9 +41,9 @@ export default function trip(state = initial, action) {
 }
 
 // Action creators
-export function addBumps(data) {
+export function addTripBumps(data) {
 	return {
-		type: ADD_BUMPS,
+		type: ADD_TRIP_BUMPS,
 		data: data
 	}
 }

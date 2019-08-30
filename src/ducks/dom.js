@@ -2,7 +2,7 @@
 
 // Actions
 export const SET_DIMENTIONS = "bumpyroads/dom/SET_DIMENTIONS";
-export const SET_STATUSBAR_COLOR = "bumpyroads/dom/SET_STATUSBAR_COLOR";
+export const CHANGE_BARCOLOR = "bumpyroads/dom/CHANGE_BARCOLOR";
 
 let initial = {
 	width: 0,
@@ -17,7 +17,7 @@ export default function dom(state = initial, action) {
 			return { ...state, 
 				width: action.dimentions.width, 
 				height: action.dimentions.height }
-		case SET_STATUSBAR_COLOR: return {...state, color: action.color }
+		case CHANGE_BARCOLOR: return {...state, color: action.color }
 		default: return state
 	}
 }
@@ -30,9 +30,9 @@ export function setDimentions(dimentions) {
 	}
 }
 
-export function setStatusbarColor(color) {
+export function changeBarColor(color) {
 	return {
-		type: SET_STATUSBAR_COLOR,
+		type: CHANGE_BARCOLOR,
 		color: color
 	}
 }

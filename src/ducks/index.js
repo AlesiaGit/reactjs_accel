@@ -5,6 +5,7 @@ import menu from './menu-state';
 import mode from './mode';
 import favorities from './favorities';
 import dom from './dom';
+import bumps from './bumps-map';
 
 const reducers = {
   selectedTrip: selectedTrip,
@@ -12,28 +13,9 @@ const reducers = {
   menu: menu,
   mode: mode,
   favorities: favorities,
-  dom: dom
+  dom: dom,
+  bumps: bumps
 };
-
-// const mapDispatchToProps = {
-//   closeDrawerView: menu.closeDrawerView,
-//   selectDrawerView: menu.selectDrawerView,
-//   selectBumpsMapView: menu.selectBumpsMapView,
-//   selectCheckTripView: menu.selectCheckTripView,
-//   selectFavoritiesListView: menu.selectFavoritiesListView,
-//   selectTripView: menu.selectTripView,
-//   selectShareView: menu.selectShareView,
-//   startRecording: mode.startRecording,
-//   stopRecording: mode.stopRecording,
-//   startGuidance: mode.startGuidance,
-//   stopGuidance: mode.stopGuidance,
-//   buildRoute: mode.buildRoute,
-//   noTripSelected: favorite.noTripsSelected,
-//   selectTrip: favorite.selectTrip,
-//	addBumps: trip.addBumps,
-//	updateLocation: trip.updateLocation,
-//	resetTrip: trip.resetTrip
-// };
 
 export default combineReducers(reducers);
 

@@ -1,9 +1,9 @@
 import React, {Component} from 'react';
 import './App.css';
-//import { GoogleApiWrapper } from 'google-maps-react';
 import { Route, HashRouter } from 'react-router-dom';
 import { createBrowserHistory } from "history";
 import { connect } from "react-redux";
+import { db } from './Firebase/index';
 
 import ReportBumps from './ReportBumps/index';
 import SharedTrip from './SharedTrip/index';
@@ -11,64 +11,67 @@ import CheckTrip from './CheckTrip/index';
 import Start from './Start/index';
 
 import * as dom from "../ducks/dom";
+import * as bumps from "../ducks/bumps-map";
+
+const mapStateToProps = state => {
+    return {
+        dom: state.dom
+    };
+};
 
 const mapDispatchToProps = {
 	setDimentions: dom.setDimentions,
-	setStatusbarColor: dom.setStatusbarColor
+	addBumps: bumps.addBumps,
 };
 
 const customHistory = createBrowserHistory();
 
 class App extends Component {
 
-	constructor(props) {
-		super(props);
-
-	    this.state = {
-	    	current: window.location.hash.slice(2) || "map",
-	    };
-	}
-
 	componentDidMount = () => {
-		window.addEventListener('load', function() {
+		window.addEventListener('load', () => window.history.pushState({ noBackExitsApp: true }, ''));
+
+		window.addEventListener('popstate', (event) => {
+		  if (!event.state || !event.state.noBackExitsApp) return;
 		  window.history.pushState({ noBackExitsApp: true }, '')
 		})
 
-		window.addEventListener('popstate', function(event) {
-		  if (event.state && event.state.noBackExitsApp) {
-		    window.history.pushState({ noBackExitsApp: true }, '')
-		  }
-		})
+		this.updateStatusbarColor();
+		this.retrieveBumpsFromDatabase();
 
 		this.props.setDimentions({ width: window.innerWidth, height: window.innerHeight })
+
+		
 	}
 
-	setStatusBarColor = color => {
-        document
-            .querySelector("meta[name=theme-color]")
-            .setAttribute("content", color);
-    };
+	componentDidUpdate = prevProps => {
+		if (prevProps.dom.color !== this.props.dom.color) {
+			this.updateStatusbarColor();
+		}
+	}
+
+	updateStatusbarColor = () => {
+		document.querySelector("meta[name=theme-color]").setAttribute("content", this.props.dom.color);
+	}
+
+	retrieveBumpsFromDatabase  = () => {
+		db.collection('bumpsmap').doc('bumps')
+		.get()
+		.then(doc => { 
+			if (doc.exists) this.props.addBumps(doc.data().bumps) 
+		})
+	}
 
 	render() {
-		let { current, ratio } = this.state;
-
 	    return (
 		    <HashRouter history={customHistory} >
-		       	<Route exact path="/" component={() => {
-		       		return <Start setStatusBarColor={this.setStatusBarColor} />}} />
-				<Route exact path="/map" component={() => {
-					return <ReportBumps 
-						setStatusBarColor={this.setStatusBarColor}
-						/>
-					}} />
-				<Route exact path="/checktrip" component={() => {
-					return <CheckTrip 
-						setStatusBarColor={this.setStatusBarColor}/>
-					}} />
-				<Route path="/shared/:number" component={() => (<SharedTrip	setStatusBarColor={this.setStatusBarColor}/>)} />
+		       	<Route exact path="/" component={Start} />
+				<Route exact path="/map" component={ReportBumps} />
+				<Route exact path="/checktrip" component={CheckTrip} />
+				<Route path="/shared/:number" component={SharedTrip} />
   			</HashRouter>
 	    );
 	}  
 }
 
-export default connect(null, mapDispatchToProps)(App);
+export default connect(mapStateToProps, mapDispatchToProps)(App);

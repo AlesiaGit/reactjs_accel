@@ -7,27 +7,29 @@ import '../../styles/shared.css';
 
 import { db } from '../Firebase/index';
 import { GoogleApiWrapper, Polyline } from 'google-maps-react';
-import { BumpsMap, Car } from './index';
+import { BumpsMap, Car, SelectedTripMap } from './index';
 import FavoritiesList from '../ReportBumps/favorities-list';
-import FavoritiesMap from '../ReportBumps/favorities-map';
+//import FavoritiesMap from '../ReportBumps/favorities-map';
 import * as helpers from '../../helpers/index';
 
 //store
-import store from "../../store/store";
 import * as menu from "../../ducks/menu-state";
 import * as favorities from "../../ducks/favorities";
 import * as selectedTrip from "../../ducks/selected-trip";
 import * as trip from "../../ducks/trip";
 import * as dom from "../../ducks/dom";
+import * as bumps from "../../ducks/bumps-map";
+
 
 const mapDispatchToProps = {
   	selectTrip: selectedTrip.selectTrip,
   	addToFavorities: favorities.addToFavorities,
   	selectTripView: menu.selectTripView,
- 	addBumps: trip.addBumps, 
+ 	addTripBumps: trip.addTripBumps, 
 	updateLocation: trip.updateLocation, 
 	resetTrip: trip.resetTrip,
-	setDimentions: dom.setDimentions
+	setDimentions: dom.setDimentions,
+	addBumps: bumps.addBumps,
 };
 
 
@@ -37,7 +39,8 @@ const mapStateToProps = state => {
         menu: state.menu,
         mode: state.mode,
         favorities: state.favorities,
-        trip: state.trip
+        trip: state.trip,
+        bumpsmap: state.bumpsmap
     };
 };
 
@@ -50,13 +53,14 @@ const NAVIGATOR_OPTIONS = {
 	maximumAge: 0
 };
 
+
 class Body extends Component {
 	constructor(props) {
 		super(props);
 
 	    this.state = {
 	    	//dimentions: { height: window.innerHeight, width: window.innerWidth },
-	    	allBumps: [],
+	    	//allBumps: [],
 	    	cover: false
 	    };
 
@@ -135,7 +139,7 @@ class Body extends Component {
 			let currentAcceleration = Math.pow((ax * ax + ay * ay + az * az), 1 / 3); //current level of acceleration with existing phone position
 			
 			if (currentAcceleration > 2.829226039) { //регулируемое значение
-				this.props.addBumps({
+				this.props.addTripBumps({
 					bumps: this.updateArrayIfPositionChanged(bumps, {lat, lng}), 
 					previousAcceleration: { x, y, z }
 				});
@@ -175,7 +179,7 @@ class Body extends Component {
 
 	updateLocationData = location => {
 		let prev = this.props.trip.currentLocation;
-		let { angle, move, path, distance } = this.props.trip;
+		let { move, path, distance } = this.props.trip;
 		let lat = location.coords.latitude;
 		let lng = location.coords.longitude;
 		let timestamp = location.timestamp;
@@ -239,57 +243,61 @@ class Body extends Component {
 	}
 
 	sendBumpsToFirebase = () => {
-		let bumps = this.state.bumps;
-		let docRef = db.collection('limit').doc('result');
-		docRef.get()
-		.then(doc => {
-		    if (doc.exists) return doc.data().data;
-		})
-		.then(allBumps => docRef.set({data: allBumps.concat(bumps)}));
+		// let sortedBumps = [];
+
+		// bumps.forEach(bump => {
+		// 	if (allBumps.indexOf(bump) < 0) allBumps.push(bump);
+		// })
+
+		// let bumps = this.props.trip.bumps;
+		// let docRef = db.collection('limit').doc('result');
+		// docRef.get()
+		// .then(doc => {
+		//     if (doc.exists) return doc.data().data;
+		// })
+		// .then(allBumps => docRef.set({data: allBumps.concat(bumps)}));
 	}
 
 	sendTripToFirebase = () => {
 		let path = db.collection('trip').doc('path');
-		path.set({path: this.state.path});
+		path.set({path: this.props.trip.path});
 		let bumps = db.collection('trip').doc('bumps');
-		bumps.set({bumps: this.state.bumps});
+		bumps.set({bumps: this.props.trip.bumps});
 	}
 
 	addTripToShared = () => {
 		let id = this.props.selectedTrip.id;
-		db.collection("shared").doc(id).set({"tripdata": this.state.favorities.filter(item => item.id === id)[0]});
-	}
-
-	
+		db.collection("shared").doc(id).set({"tripdata": this.props.selectedTrip});
+	}	
 
 	render() {
-		let allBumps = this.state.allBumps;
-		let { google, isSearchMode, start, end, isCheckTripView, selectedTrip } = this.props;
-		let {bumps, angle, move, path, currentLocation} = this.props.trip;
-		let favorities = this.props.favorities;
+		let { google, start, end } = this.props;
+
+		if (this.props.menu.isFavoritiesListView) return <FavoritiesList />
 
 		
 
-		if (this.props.menu.isFavoritiesListView) return <FavoritiesList google={google} />
+		if (this.props.menu.isShareView) return <SelectedTripMap google={google} />
 
-		if (this.props.menu.isSelectedTripView) return <FavoritiesMap google={google} />
+		//return null;
 
-		if (this.props.menu.isCheckTripView) {
-			return (
-				<div className="map">
-					<BumpsMap 
-						centerAroundCurrentLocation
-						google={google}
-						updateLocationData={this.updateLocationData}
-						allBumps={allBumps}
-						start={start} 
-						end={end} >
-						<Car />
-					</BumpsMap>	
+		if (this.props.menu.isSelectedTripView) return <SelectedTripMap google={google} />
+
+		// if (this.props.menu.isCheckTripView) {
+		// 	return (
+		// 		<div className="map">
+		// 			<BumpsMap 
+		// 				centerAroundCurrentLocation
+		// 				google={google}
+		// 				updateLocationData={this.updateLocationData}
+		// 				start={start} 
+		// 				end={end} >
+		// 				<Car />
+		// 			</BumpsMap>	
 					
-				</div>
-			)
-		}
+		// 		</div>
+		// 	)
+		// }
 
 		
 		return (
@@ -298,11 +306,10 @@ class Body extends Component {
 					centerAroundCurrentLocation
 					google={google}
 					updateLocationData={this.updateLocationData}
-					allBumps={allBumps}
 					>
 					<Car />	
 					<Polyline
-						path={path}
+						path={this.props.trip.path}
 						strokeColor="#4D8FAC"
 						strokeOpacity={0.8}
 						strokeWeight={4} 

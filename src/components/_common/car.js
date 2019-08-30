@@ -1,7 +1,7 @@
 import { Component } from 'react';
-import store from "../../store/store";
-import * as trip from "../../ducks/trip";
 import { connect } from "react-redux";
+
+import * as trip from "../../ducks/trip";
 
 const mapStateToProps = state => {
     return {

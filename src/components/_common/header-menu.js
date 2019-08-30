@@ -1,8 +1,5 @@
 import React, { Component } from 'react';
 import { connect } from "react-redux";
-import store from "../../store/store";
-import * as menu from "../../ducks/menu-state";
-import * as trip from "../../ducks/selected-trip";
 
 const mapStateToProps = state => {
     return {
@@ -11,12 +8,13 @@ const mapStateToProps = state => {
 };
 
 class HeaderMenu extends Component {
+
 	render() {
 		return (
 				<div className="header-menu" >
 					<div className="header-left-menu">
 						<div className={`header-menu-icon ${this.props.menu.iconleft}`} 
-							onClick={() => this.props.onMenuToggle()}/>
+							onClick={() => this.props.onLeftMenuToggle()}/>
 						<div className="page-title">{this.props.menu.title}</div>
 					</div>
 					<div className="header-right-menu" >

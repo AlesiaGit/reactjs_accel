@@ -22,34 +22,25 @@ let initial = {
 	iconright: ''
 };
 
+const updateMenuState = (state, action) => {
+	return {...initial, 
+		[action.menuitem]: true, 
+		title: action.title, 
+		iconleft: action.iconleft, 
+		iconright: action.iconright };
+}
+
 // Reducer
 export default function menu(state = initial, action) {
 	switch (action.type) {
-		case FAVORITIES_LIST_VIEW: 
-			return {...initial, 
-				[action.menuitem]: true,
-				title: action.title, 
-				iconleft: action.iconleft};
-		case SELECTED_TRIP_VIEW: 
-			return {...initial, 
-				[action.menuitem]: true, 
-				title: action.title, 
-				iconleft: action.iconleft, 
-				iconright: action.iconright};
-		case BUMPS_MAP_VIEW: 
-			return {...initial, 
-				[action.menuitem]: true,
-				title: action.title, 
-				iconleft: action.iconleft};
-		case CHECK_TRIP_VIEW:  
-			return {...initial, 
-				[action.menuitem]: true,
-				title: action.title, 
-				iconleft: action.iconleft};
-		case DRAWER_VIEW: return { ...state, isDrawerView: action.menuitem }
-		case CLOSE_DRAWER_VIEW: return { ...state, isDrawerView: action.menuitem }
-		case SHARE_VIEW: return { ...state, isShareView: action.menuitem }
-		case CLOSE_SHARE_VIEW: return { ...state, isShareView: action.menuitem }
+		case FAVORITIES_LIST_VIEW: return updateMenuState(state, action)
+		case SELECTED_TRIP_VIEW: return updateMenuState(state, action)
+		case BUMPS_MAP_VIEW: return updateMenuState(state, action)
+		case CHECK_TRIP_VIEW: return updateMenuState(state, action)
+		case DRAWER_VIEW: return { ...state, isDrawerView: action.status }
+		case CLOSE_DRAWER_VIEW: return { ...state, isDrawerView: action.status }
+		case SHARE_VIEW: return { ...state, isShareView: action.status }
+		case CLOSE_SHARE_VIEW: return { ...state, isShareView: action.status }
 		default: 
 			return state;
 	}
@@ -62,6 +53,7 @@ export function selectFavoritiesListView() {
 		menuitem: 'isFavoritiesListView',
 		title: 'Report a bump',
 		iconleft: 'burger-icon',
+		iconright: ''
 	}
 }
 
@@ -78,14 +70,14 @@ export function selectTripView() {
 export function selectDrawerView() {
 	return {
 		type: DRAWER_VIEW,
-		menuitem: true
+		status: true
 	}
 }
 
 export function closeDrawerView() {
 	return {
 		type: CLOSE_DRAWER_VIEW,
-		menuitem: false
+		status: false
 	}
 }
 
@@ -94,21 +86,22 @@ export function selectBumpsMapView() {
 		type: BUMPS_MAP_VIEW,
 		menuitem: 'isBumpsMapView',
 		title: 'Report a bump',
-		iconleft: 'burger-icon'
+		iconleft: 'burger-icon',
+		iconright: ''
 	}
 }
 
 export function selectShareView() {
 	return {
 		type: SHARE_VIEW,
-		menuitem: true
+		status: true
 	}
 }
 
 export function closeShareView() {
 	return {
 		type: CLOSE_SHARE_VIEW,
-		menuitem: false
+		status: false
 	}
 }
 
@@ -117,6 +110,7 @@ export function selectCheckTripView() {
 		type: CHECK_TRIP_VIEW,
 		menuitem: 'isCheckTripView',
 		title: 'Check your trip',
-		iconleft: 'burger-icon'
+		iconleft: 'burger-icon',
+		iconright: ''
 	}
 }

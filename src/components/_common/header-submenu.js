@@ -19,7 +19,7 @@ class HeaderSubmenu extends Component {
 					options.map((item, index) => (
 						<div 
 							className={`header-submenu-tab ${this.props.markActiveTab(item) ? "tab-active" : ""}`} 
-							onClick={() => this.props.onSubmenuSelect(item)} 
+							onClick={() => this.props.onSubmenuTabSelect(item)} 
 							key={index}>
 							{item}
 						</div>

@@ -4,8 +4,6 @@ import { connect } from "react-redux";
 import * as selectedTrip from "../../ducks/selected-trip";
 import * as menu from "../../ducks/menu-state";
 
-import FavoritiesMap from './favorities-map';
-
 const mapStateToProps = state => {
     return {
         favorities: state.favorities

@@ -2,21 +2,19 @@ import React, { Component } from 'react';
 import * as helpers from '../../helpers/index';
 import { connect } from "react-redux";
 
-import store from "../../store/store";
 import * as trip from "../../ducks/trip";
-import * as dom from "../../ducks/dom";
 
 const mapStateToProps = state => {
     return {
         menu: state.menu,
         mode: state.mode,
         trip: state.trip,
-        dom: state.dom
+        dom: state.dom,
+        bumps: state.bumps
     };
 };
 
 const mapDispatchToProps = {
- 	addBumps: trip.addBumps,
 	updateLocation: trip.updateLocation,
 	resetTrip: trip.resetTrip
 };
@@ -76,8 +74,12 @@ class BumpsMap extends Component {
 			this.tripBumps = this.setBumpsOnMap(this.props.trip.bumps, this.tripBumps, "#fbad19", 0.8);
 		}
 
-		if (prevProps.allBumps !== this.props.allBumps && !this.props.menu.isCheckTripView) {
-			this.databaseBumps = this.setBumpsOnMap(this.props.allBumps, this.databaseBumps, "#e34929", 0.8);
+		// if (prevProps.allBumps !== this.props.allBumps && !this.props.menu.isCheckTripView) {
+		// 	this.databaseBumps = this.setBumpsOnMap(this.props.allBumps, this.databaseBumps, "#e34929", 0.8);
+		// }
+
+		if (prevProps.bumps !== this.props.bumps && !this.props.menu.isCheckTripView) {
+			this.databaseBumps = this.setBumpsOnMap(this.props.bumps, this.databaseBumps, "#e34929", 0.8);
 		}
 
 		if (prevProps.mode.isBuildingRoute !== this.props.mode.isBuildingRoute && this.props.mode.isBuildingRoute === true) {
@@ -107,7 +109,7 @@ class BumpsMap extends Component {
 				let polyline = maps.geometry.encoding.decodePath(response.routes[0].overview_polyline);
 				polyline.forEach(i => directionArray.push({lat: i.lat(), lng: i.lng()}));
 
-				let result = helpers.getRouteBumps(directionArray, this.props.allBumps);
+				let result = helpers.getRouteBumps(directionArray, this.props.bumps);
 
 				this.databaseBumps = this.setBumpsOnMap(result, this.databaseBumps, "#e34929", 0.8);
 				this.directionsDisplay.setDirections(response);
@@ -163,7 +165,7 @@ class BumpsMap extends Component {
 			maps.event.trigger(this.map, 'ready');
 
 			if (this.map && !this.props.menu.isCheckTripView) { 
-				this.databaseBumps = this.setBumpsOnMap(this.props.allBumps, this.databaseBumps, "#e34929", 0.8);
+				this.databaseBumps = this.setBumpsOnMap(this.props.bumps, this.databaseBumps, "#e34929", 0.8);
 			}
 		}
 	}

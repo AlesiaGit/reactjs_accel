@@ -23,10 +23,10 @@ class SearchMenu extends Component {
 								className="search-input" 
 								placeholder={(item === "start") ? "(Current position)" : ""}
 								onFocus={this.props.preventResize}
-								onChange={e => this.props.handleChange(e)} />
+								onChange={e => this.props.handleInpuChange(e)} />
 							<div 
 								className="search-cancel-btn"
-								onClick={() => this.props.clearSearch(item)} />
+								onClick={() => this.props.clearInput(item)} />
 						</div>
 						))}
 				</div>
