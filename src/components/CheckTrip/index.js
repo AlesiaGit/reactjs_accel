@@ -4,7 +4,6 @@ import { HeaderMenu, Drawer, NextStepButton, Body } from '../_common/index';
 import SearchMenu from './search-menu';
 import { connect } from "react-redux";
 
-import store from "../../store/store";
 import * as menu from "../../ducks/menu-state";
 import * as mode from "../../ducks/mode";
 import * as dom from "../../ducks/dom";
@@ -47,16 +46,15 @@ class CheckTrip extends Component {
 	preventResize = () => {
 		let { width, height } = this.props.dom;
 		let ratio = width / height;
-		let newHeight = window.innerHeight / ratio;
-        document.querySelector("meta[name=viewport]")
-        .setAttribute("content", `"width=device-width, height=${newHeight}, user-scalable=no, initial-scale=1.0, maximum-scale=1.0"`);
+		let newHeight = window.innerHeight * ratio;
+		document.querySelector("meta[name=viewport]")
+        .setAttribute("content", `width=device-width, height=${newHeight}, user-scalable=no, initial-scale=1.0, maximum-scale=1.0`);
     }
 
 	onLeftMenuToggle = () => {
 		let isDrawerView = this.props.menu.isDrawerView;
 		if (isDrawerView) return this.props.closeDrawerView();
 		this.props.selectDrawerView();
-		//console.log(store.getState())
 	}
 
 	onNextStepButtonToggle = () => {
@@ -108,7 +106,7 @@ class CheckTrip extends Component {
 						text={text}	/>	
 				</div>
 				<div className="cover" style={{display: coverDisplay}}>
-					<div className="cover-background" onClick={this.onMenuToggle}  />
+					<div className="cover-background" onClick={this.onLeftMenuToggle}  />
 					<Drawer />
 				</div>
 			</div> 

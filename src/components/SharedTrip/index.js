@@ -3,9 +3,7 @@ import { db } from '../Firebase/index';
 import { connect } from "react-redux";
 
 import '../../styles/shared-trip.css';
-import FavoritiesMap from '../ReportBumps/favorities-map';
 import { Body, Slider } from '../_common/index';
-import store from "../../store/store";
 
 import * as selectedTrip from "../../ducks/selected-trip";
 import * as menu from "../../ducks/menu-state";
@@ -28,56 +26,94 @@ class SharedTrip extends Component {
 		super(props);
 
 		this.state = {
-			isReadFromDatabase: false
+			isDataReceived: false,
+			isStatsView: true,
+			stats: null,
+			tripQuality: "low"
 		}
 
 	}
 
 	componentDidMount = () => {
-		// let id = window.location.hash.split("#/shared/").pop();
-		// db.collection('shared').doc(id).get().then(doc => {
-		// 	if (doc.exists) return doc.data().tripdata;
-		// }).then(trip => {
-		// 	this.props.selectTrip(trip);
-		// 	this.props.selectTripView();
-		// 	this.setState({ isReadFromDatabase: true})
-		// 	console.log(this.props.selectedTrip)
-		// }).catch(function(error) {
-		//     console.error("No shared data found");
-		// });
-
-		// console.log(this.props)
-
-		this.setState({ isReadFromDatabase: true})
+		this.getSharedTripData()
+		.then(() => this.getAppStatistics())
+		.then(() => this.setState({ 
+			tripQuality: this.setTripQuality(),
+			isDataReceived: true
+		}))
+		.catch(error => console.log(error))
 	}
 
-	
+	getSharedTripData = () => {
+		let id = window.location.hash.split("#/shared/").pop();
+		return db.collection('shared').doc(id)
+		.get()
+		.then(doc => {
+			if (doc.exists) return doc.data().tripdata;
+		}).then(trip => {
+			this.props.selectTrip(trip);
+			this.props.selectTripView();
+		})
+	}
+
+	getAppStatistics = () => {
+		return db.collection('stats').doc('totals')
+		.get()
+		.then(doc => {
+			if (doc.exists) this.setState({stats: doc.data()})
+		})
+	}
+
+	toggleStats = () => {
+		this.setState({isStatsView: !this.state.isStatsView})
+	}
+
+	setTripQuality = () => {
+		let trip = this.props.selectedTrip;
+		let stats = this.state.stats;
+
+		let tripQuality = ["low", "moderate", "good"];
+		let quality = (trip.bumps.length/trip.distance) / (stats.bumpsCount/stats.distanceTotal) * 100;
+
+		if (quality < 30) return tripQuality[0];
+		if (quality > 70) return tripQuality[2];
+
+		return tripQuality[1];
+	}
 
 	render() {
-		if (this.state.isReadFromDatabase === false) return <div>Retrieving data from database</div>
+		let trip = this.props.selectedTrip;
+		let { isDataReceived, isStatsView, stats, tripQuality } = this.state;
+
+		if (isDataReceived === false) return <div>Retrieving data from database</div>
+
+		let bumpsCount = trip.bumps.length;
+		let distance = trip.distance;
 		
 		return (
-			<div>
+			<div className="shared-wrapper">
 				<div className="shared-stats">
 					<div className="shared-summary-header">
 						<div className="shared-summary-wrapper">
-							<div className="shared-summary">Bumpy road</div>
-							<div className="shared-trip-quality">Trip quality: low</div>
+							<div className="shared-summary">Bumpy road informer</div>
+							<div className="shared-trip-quality">Trip quality: {tripQuality} </div>
 						</div>
-						<div className="collapse-icon" />
+						<div className="collapse-icon" onClick={this.toggleStats}/>
 					</div>
+					<div className="shared-details-wrapper" style={{display: isStatsView ? "flex" : "none"}}>
 					<div className="shared-endpoints">
-						<div className="shared-address-line"><span className="shared-address-destination">From: </span>Biriuzova 10A, Minsk, Belarus</div>
-						<div className="shared-address-line"><span className="shared-address-destination">To: </span>Pereulok Vostochnyy 82, Minsk, Belarus</div>
+						<div className="shared-address-line"><span className="shared-address-destination">From: </span>{trip.start}</div>
+						<div className="shared-address-line"><span className="shared-address-destination">To: </span>{trip.end}</div>
 					</div>
 					<div className="shared-slider-wrapper">
-						<div className="slider-header"><span className="slider-fieldname">Bumps: </span>34</div>
-						<Slider color="#7fb8e9" width="20"/>
-						<div className="slider-header"><span className="slider-fieldname">Average: </span>34</div>
-						<Slider color="#fbad19" width="75"/>
+						<div className="slider-header"><span className="slider-fieldname">Bumps per trip: </span>{bumpsCount}</div>
+						<Slider color="#7fb8e9" width={bumpsCount / (stats.bumpsCount / stats.tripsCount) * 100} />
+						<div className="slider-header"><span className="slider-fieldname">Bumps per km: </span>{(bumpsCount/distance).toFixed(2)}</div>
+						<Slider color="#fbad19" width={(bumpsCount/distance) / (stats.bumpsCount/stats.distanceTotal) * 100}/>
+					</div>
 					</div>
 				</div>
-				<div className="map">Hello</div>
+				<div className="shared-map"><Body /></div>
 			</div>
 			);
 

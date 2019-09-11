@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from "react-redux";
 
+import store from "../../store/store";
 import * as menu from "../../ducks/menu-state";
 
 const mapDispatchToProps = dispatch => ({

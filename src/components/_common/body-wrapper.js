@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from "react-redux";
+import firebase from "firebase";
 
 import '../../styles/report-bumps.css';
 import '../../styles/check-trip.css';
@@ -12,6 +13,7 @@ import FavoritiesList from '../ReportBumps/favorities-list';
 //import FavoritiesMap from '../ReportBumps/favorities-map';
 import * as helpers from '../../helpers/index';
 
+import store from "../../store/store";
 //store
 import * as menu from "../../ducks/menu-state";
 import * as favorities from "../../ducks/favorities";
@@ -28,6 +30,7 @@ const mapDispatchToProps = {
  	addTripBumps: trip.addTripBumps, 
 	updateLocation: trip.updateLocation, 
 	resetTrip: trip.resetTrip,
+	resetMove: trip.resetMove,
 	setDimentions: dom.setDimentions,
 	addBumps: bumps.addBumps,
 };
@@ -59,14 +62,10 @@ class Body extends Component {
 		super(props);
 
 	    this.state = {
-	    	//dimentions: { height: window.innerHeight, width: window.innerWidth },
-	    	//allBumps: [],
 	    	cover: false
 	    };
 
-	    this.canvas = React.createRef();
 	    this.mymap = React.createRef();
-	    this.mymarker = React.createRef();
 	}
 
 	componentDidMount = () => {
@@ -82,16 +81,16 @@ class Body extends Component {
 			}
 	   	}
 
-	   	if (prevProps.mode.isGuidance !== this.props.mode.isGuidance) {
-		   	if (this.props.mode.isGuidance === true) {
-				this.startRecording();
-			} else {
-				this.stopRecording();
-			}
-	   	}
+	   	//if (prevProps.mode.isGuidance !== this.props.mode.isGuidance) {
+		 //   	if (this.props.mode.isGuidance === true) {
+			// 	this.startGuidance();
+			// } else {
+			// 	this.stopGuidance();
+			// }
+	   	//}
 
 		if (prevProps.menu.isShareView !== this.props.menu.isShareView) {
-	   		if (this.props.menu.isShareView === true) this.addTripToShared();
+	   		if (this.props.menu.isShareView === true) this.saveSharedTripToDatabase();
 	   	}	
 
 	   	if (prevProps.favorities !== this.props.favorities) {
@@ -183,21 +182,17 @@ class Body extends Component {
 		let lat = location.coords.latitude;
 		let lng = location.coords.longitude;
 		let timestamp = location.timestamp;
-
-		let segmentDistance = this.props.trip.path.length ? helpers.getDistance(prev.lat, prev.lng, lat, lng) : 0; // в метрах
+		let segmentDistance = path.length ? helpers.getDistance(prev.lat, prev.lng, lat, lng) : 0; // в метрах
+		
+		if (move > 5) this.props.resetMove();
 		
 		this.props.updateLocation({
-			currentLocation: { 
-				lat, 
-				lng, 
-				speed: this.updateSpeedValue(location), 
-				timestamp 
-			}, 
+			currentLocation: { lat, lng, speed: this.updateSpeedValue(location), timestamp }, 
 			path: this.updateArrayIfPositionChanged(path, {lat, lng}), 
 			angle: this.updateAngleValue(location), 
 			move: move + segmentDistance, 
 			distance: distance + segmentDistance / 1000 
-		})
+		});
 	}
 
 	convertToReadableAddress = coords => {
@@ -221,6 +216,8 @@ class Body extends Component {
 	stopRecording = () => {
 		navigator.geolocation.clearWatch(navigatorId);
 		window.removeEventListener("devicemotion", this.updateAccelerationData);
+		
+		this.saveBumpsToDatabase().then(() => this.getDatabaseBumpsCount()).then(bumpsCount => this.updateStatsInDatabase(bumpsCount));
 		this.updateFavoritiesData();
 	}
 
@@ -242,78 +239,77 @@ class Body extends Component {
 		//console.log(map.getZoom());
 	}
 
-	sendBumpsToFirebase = () => {
-		// let sortedBumps = [];
+	saveSharedTripToDatabase = () => {
+		db.collection('shared').doc(this.props.selectedTrip.id)
+		.set({tripdata: this.props.selectedTrip}) //обработать неотправку на сервер
+		.catch(error => console.log(error))
+	}	
 
-		// bumps.forEach(bump => {
-		// 	if (allBumps.indexOf(bump) < 0) allBumps.push(bump);
-		// })
+	saveBumpsToDatabase = () => {
+		return new Promise((resolve, reject) => {
+			let bumpsRef = db.collection('bumpsmap').doc('bumps');
+			let count = 0;
+			this.props.trip.bumps.forEach(bump => 
+				bumpsRef.update({bumps: firebase.firestore.FieldValue.arrayUnion(bump)})
+				.then(() => count++)
+				.catch(error => reject(new Error('Bumps are not updated in database'))
+			))
 
-		// let bumps = this.props.trip.bumps;
-		// let docRef = db.collection('limit').doc('result');
-		// docRef.get()
-		// .then(doc => {
-		//     if (doc.exists) return doc.data().data;
-		// })
-		// .then(allBumps => docRef.set({data: allBumps.concat(bumps)}));
+			if (count === this.props.trip.bumps.length) resolve('success')
+		});		
 	}
 
-	sendTripToFirebase = () => {
-		let path = db.collection('trip').doc('path');
-		path.set({path: this.props.trip.path});
-		let bumps = db.collection('trip').doc('bumps');
-		bumps.set({bumps: this.props.trip.bumps});
+	getDatabaseBumpsCount = () => {
+		return db.collection('bumpsmap').doc('bumps')
+		.get()
+		.then(doc => { 
+			if (doc.exists) return doc.data().bumps.length})
 	}
 
-	addTripToShared = () => {
-		let id = this.props.selectedTrip.id;
-		db.collection("shared").doc(id).set({"tripdata": this.props.selectedTrip});
+	updateStatsInDatabase = bumpsCount => {
+		let statsRef = db.collection('stats').doc('totals');
+		
+		statsRef.update({
+		    bumpsCount: bumpsCount,
+		    distanceTotal: firebase.firestore.FieldValue.increment(Math.round(this.props.trip.distance)),
+		    tripsCount: firebase.firestore.FieldValue.increment(1),
+		});
 	}	
 
 	render() {
 		let { google, start, end } = this.props;
+		let { isFavoritiesListView, isShareView, isSelectedTripView, isCheckTripView } = this.props.menu;
 
-		if (this.props.menu.isFavoritiesListView) return <FavoritiesList />
+		if (isFavoritiesListView) return <FavoritiesList />
+		if (isShareView || isSelectedTripView) return <SelectedTripMap google={google} />
 
-		
-
-		if (this.props.menu.isShareView) return <SelectedTripMap google={google} />
-
-		//return null;
-
-		if (this.props.menu.isSelectedTripView) return <SelectedTripMap google={google} />
-
-		// if (this.props.menu.isCheckTripView) {
-		// 	return (
-		// 		<div className="map">
-		// 			<BumpsMap 
-		// 				centerAroundCurrentLocation
-		// 				google={google}
-		// 				updateLocationData={this.updateLocationData}
-		// 				start={start} 
-		// 				end={end} >
-		// 				<Car />
-		// 			</BumpsMap>	
-					
-		// 		</div>
-		// 	)
-		// }
-
+		if (isCheckTripView) {
+			return (
+				<div className="map">
+					<BumpsMap 
+						centerAroundCurrentLocation
+						google={google}
+						updateLocationData={this.updateLocationData}
+						start={start} 
+						end={end}>
+						<Car />
+					</BumpsMap>	
+				</div>
+			)
+		}
 		
 		return (
 			<div className="map">
 				<BumpsMap 
 					centerAroundCurrentLocation
 					google={google}
-					updateLocationData={this.updateLocationData}
-					>
+					updateLocationData={this.updateLocationData}>
 					<Car />	
 					<Polyline
 						path={this.props.trip.path}
 						strokeColor="#4D8FAC"
 						strokeOpacity={0.8}
-						strokeWeight={4} 
-						/>					
+						strokeWeight={4} />					
 				</BumpsMap>
 				<div className="map-bump-cover" style={{display: this.state.cover ? "flex": "none"}}/>
 			</div>

@@ -10,10 +10,6 @@ const mapStateToProps = state => {
     };
 };
 
-const mapDispatchToProps = {
-	resetMove: trip.resetMove
-};
-
 var elements = [
 {path: "M69.9,36c0.3-9.3,0.3-9.1,0.3-9.1c0-0.2,0.7-7.9-0.6-15.3c-1.3-7.5-9.7-9.5-9.7-9.5l-0.4,0l-8.9-0.3v0l-8.8,0.3  l-0.4,0c0,0-8.4,2.1-9.7,9.5c-1.3,7.4-0.6,15.1-0.6,15.3c0,0,0-0.3,0.3,9.1c0.4,9.8-0.6,34-0.5,37c0.1,2.9-0.2,9.2,0.4,10.8  c0.6,1.6,2.6,9.6,2.6,9.6s3.2,6.2,16.8,5.3v0c13.5,0.9,16.7-5.3,16.7-5.3s2-8,2.6-9.6c0.6-1.6,0.2-7.9,0.4-10.8  C70.5,70,69.5,45.8,69.9,36L69.9,36z", fill:"#D14C32"},
 {path: "M61.7,27.5c-3.2-1.6-11.1-1.8-11.1-1.8v0c0,0-8,0.1-11.1,1.8c-3.2,1.6-4.3,2.4-4.1,3.5c0.2,1.1,2.6,12,2.6,12.3  c0,0.3,0.2,0.7,1.5,0.4c1.2-0.4,11.2-0.8,11.2-0.8v0c0,0,10,0.4,11.2,0.8c1.2,0.4,1.5-0.1,1.5-0.4c0-0.3,2.4-11.2,2.6-12.3  C66,29.9,64.9,29.2,61.7,27.5L61.7,27.5z", fill: "#121215"},
@@ -110,10 +106,6 @@ class Car extends Component {
 		    this.marker[index] = new google.maps.Marker(pref);
 		    this.marker[index].setZIndex(100);
 		});
-
-	    this.props.resetMove();
-
-
 	}
 
 	render() {
@@ -121,4 +113,4 @@ class Car extends Component {
 	}
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Car);
+export default connect(mapStateToProps)(Car);

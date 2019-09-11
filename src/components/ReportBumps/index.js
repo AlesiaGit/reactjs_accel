@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 
 import '../../styles/shared.css';
 import '../../styles/shared-trip.css';
+
 import { HeaderMenu, HeaderSubmenu, Drawer, NextStepButton, Body } from '../_common/index';
 import * as helpers from '../../helpers/index';
 import ShareBlock from './share-block';
@@ -23,9 +24,10 @@ const mapStateToProps = state => {
 const mapDispatchToProps = {
 	closeDrawerView: menu.closeDrawerView,
 	selectDrawerView: menu.selectDrawerView,
-	selectBumpsMapView: menu.selectBumpsMapView, 
+	selectBumpsMapView: menu.selectBumpsMapView,
 	selectFavoritiesListView: menu.selectFavoritiesListView,
 	selectShareView: menu.selectShareView,
+	closeShareView: menu.closeShareView,
 	startRecording: mode.startRecording,
 	stopRecording: mode.stopRecording,
 	noTripsSelected: trip.noTripsSelected,
@@ -33,17 +35,10 @@ const mapDispatchToProps = {
 };
 
 class ReportBumps extends Component {
-	constructor(props) {
-		super(props);
-
-		this.state = {
-			isRecordingMode: false, 
-		};
-	}
-
 	componentDidMount = () => {
 		this.props.changeBarColor("#4c88b7");
 		this.props.selectBumpsMapView();
+		this.props.stopRecording();
 	}
 
 	onLeftMenuToggle = () => {
@@ -60,12 +55,12 @@ class ReportBumps extends Component {
 	}
 
 	onRightMenuToggle = () => {
-		if(this.props.menu.isShareView) return this.props.closeShareView();
+		if (this.props.menu.isShareView) return this.props.closeShareView();
 		this.props.selectShareView();
 	}
 
 	onNextStepButtonToggle = () => {
-		if(this.props.mode.isRecording) return this.props.stopRecording();
+		if (this.props.mode.isRecording) return this.props.stopRecording();
 		this.props.startRecording();
 	}	
 
@@ -77,10 +72,11 @@ class ReportBumps extends Component {
 	markActiveTab = condition => {
 		const selectedOption = `is${helpers.camelize(condition)}View`;
 		return this.props.menu[selectedOption];
-	}
+	}	
 
 	render() {
-		let coverDisplay = this.props.menu.isDrawerView ? "block" : "none";
+		let drawerDisplay = this.props.menu.isDrawerView ? "block" : "none";
+		let shareDisplay = this.props.menu.isShareView ? "block" : "none";
 		let { color, text } = this.props.mode;
 
 		return (
@@ -100,14 +96,17 @@ class ReportBumps extends Component {
 					color={color}
 					text={text}
 					toggleButton={this.onNextStepButtonToggle}	/>
-				<ShareBlock />
 				</div>
-				<div className="cover" style={{display: coverDisplay}}>
-					<div className="cover-background" onClick={this.onMenuToggle} />
+				<div className="cover" style={{display: shareDisplay}}>
+					<div className="cover-background" onClick={this.onRightMenuToggle} />
+					<ShareBlock />
+				</div>
+				<div className="cover" style={{display: drawerDisplay}}>
+					<div className="cover-background" onClick={this.onLeftMenuToggle} />
 					<Drawer />
 				</div>
 			</div>
-			);
+		);
 	}
 }
 

@@ -1,56 +1,39 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
 import { connect } from "react-redux";
+import { FacebookShareButton, TelegramShareButton, WhatsappShareButton, ViberShareButton, EmailShareButton } from 'react-share';
+import { FacebookIcon, TelegramIcon, WhatsappIcon, ViberIcon, EmailIcon } from 'react-share';
 import { db } from '../Firebase/index';
 
 const mapStateToProps = state => {
     return {
     	selectedTrip: state.selectedTrip,
-        menu: state.menu
+    	menu: state.menu
     };
 };
 
 class ShareBlock extends Component {
-	constructor(props) {
-		super(props);
-
-		this.state = {
-			isSentToDatabase: false,
-			existedInDatabase: false
-		}
-
-	}
-	componentDidMount = () => {
-		if (this.props.selectedTrip === null) return;
-		let ref = db.collection('shared').doc(this.props.selectedTrip.id);
-		// ref.set({trip: this.props.selectedTrip}, {merge: true}).then(() => {
-		// 	this.setState({ isSentToDatabase: true })
-		// });
-		ref.get().then(doc => {
-			if (doc.exists) {
-				this.setState({ existedInDatabase: true, isSentToDatabase: true })
-			} else {
-				ref.set({trip: this.props.selectedTrip}).then(() => { this.setState({ existedInDatabase: true, isSentToDatabase: true }) })
-			}
-		})
-	}
 	render() {
 		if (this.props.selectedTrip === null) return null;
+		let url = `https://alesiagit.github.io/reactjs_accel/#/shared/${this.props.selectedTrip.id}`;
 		
 		return (
-			<div className="share-wrapper" style={{display: this.props.menu.isShareView ? "flex" : "none"}}>
-				<div className="share-title">Hello</div>
-				<div className="share-body">
-
-				</div>
-				<div className="share-buttons-wrapper">
-						<div>{this.state.isSentToDatabase}</div>
-						<Link 
-							className="share-confirm" 
-							to={`/shared/${this.props.selectedTrip.id}`} 
-							replace>Press here
-						</Link>
-					<div className="share-cancel" />
+			<div className="share-wrapper">
+				<div className="share-buttons-wrapper" onClick={this.redirect}>
+					<EmailShareButton url={url} className="share-social-icon">
+						<EmailIcon size={38} round={false} borderRadius={8}/>
+					</EmailShareButton>
+					<FacebookShareButton url={url} className="share-social-icon">
+						<FacebookIcon size={38} round={false} borderRadius={8}/>
+					</FacebookShareButton>
+					<TelegramShareButton url={url} className="share-social-icon">
+						<TelegramIcon size={38} round={false} borderRadius={8}/>
+					</TelegramShareButton>
+					<WhatsappShareButton url={url} className="share-social-icon">
+						<WhatsappIcon size={38} round={false} borderRadius={8}/>
+					</WhatsappShareButton>
+					<ViberShareButton url={url} className="share-social-icon">
+						<ViberIcon size={38} round={false} borderRadius={8}/>
+					</ViberShareButton>
 				</div>
 			</div>
 		);

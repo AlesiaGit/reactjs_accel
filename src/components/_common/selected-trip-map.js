@@ -80,9 +80,6 @@ class SelectedTripMap extends Component {
 	
 	render() {
 		if (!this.props.selectedTrip) return;
-
-		console.log(this.props)
-		
 		let { width, height } = this.props.dom;
 
 	  	return (

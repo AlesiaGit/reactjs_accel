@@ -68,6 +68,7 @@ class BumpsMap extends Component {
 
 		if ((prevProps.trip.currentLocation !== this.props.trip.currentLocation) && (this.state.isCurrentPositionReceived && this.props.mode.isRecording)) {
 			this.recenterMap(this.props.trip.currentLocation);
+			this.setState({currentLocation: this.props.trip.currentLocation})
 		}
 
 		if (prevProps.trip.bumps !== this.props.trip.bumps) {
@@ -246,6 +247,7 @@ class BumpsMap extends Component {
 				isCurrentPositionReceived: this.state.isCurrentPositionReceived
 			});
 		})
+
 	}
 
 	render() {
