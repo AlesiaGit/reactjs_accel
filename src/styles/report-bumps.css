@@ -17,7 +17,7 @@
     margin-bottom: 0;
     padding: calc(1.4vh + 1.4vw);
     border-radius: calc(0.5vh + 0.5vw);
-    
+    border-left: #e34929 4vw solid;
 }
 
 .yellow {

@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { connect } from "react-redux";
 import { FacebookShareButton, TelegramShareButton, WhatsappShareButton, ViberShareButton, EmailShareButton } from 'react-share';
 import { FacebookIcon, TelegramIcon, WhatsappIcon, ViberIcon, EmailIcon } from 'react-share';
-import { db } from '../Firebase/index';
 
 const mapStateToProps = state => {
     return {
@@ -18,7 +17,7 @@ class ShareBlock extends Component {
 		
 		return (
 			<div className="share-wrapper">
-				<div className="share-buttons-wrapper" onClick={this.redirect}>
+				<div className="share-buttons-wrapper">
 					<EmailShareButton url={url} className="share-social-icon">
 						<EmailIcon size={38} round={false} borderRadius={8}/>
 					</EmailShareButton>

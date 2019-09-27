@@ -6,12 +6,13 @@ import '../../styles/report-bumps.css';
 import '../../styles/check-trip.css';
 import '../../styles/shared.css';
 
-import { db } from '../Firebase/index';
+import { db } from '../../helpers/firebase';
 import { GoogleApiWrapper, Polyline } from 'google-maps-react';
 import { BumpsMap, Car, SelectedTripMap } from './index';
 import FavoritiesList from '../ReportBumps/favorities-list';
 //import FavoritiesMap from '../ReportBumps/favorities-map';
 import * as helpers from '../../helpers/index';
+import * as testing from '../../testing/index';
 
 import store from "../../store/store";
 //store
@@ -21,6 +22,7 @@ import * as selectedTrip from "../../ducks/selected-trip";
 import * as trip from "../../ducks/trip";
 import * as dom from "../../ducks/dom";
 import * as bumps from "../../ducks/bumps-map";
+import * as stats from "../../ducks/stats";
 
 
 const mapDispatchToProps = {
@@ -29,10 +31,13 @@ const mapDispatchToProps = {
   	selectTripView: menu.selectTripView,
  	addTripBumps: trip.addTripBumps, 
 	updateLocation: trip.updateLocation, 
+	updateAcceleration: trip.updateAcceleration,
 	resetTrip: trip.resetTrip,
 	resetMove: trip.resetMove,
 	setDimentions: dom.setDimentions,
+	setRatio: dom.setRatio,
 	addBumps: bumps.addBumps,
+	addToStats: stats.addToStats,
 };
 
 
@@ -43,12 +48,13 @@ const mapStateToProps = state => {
         mode: state.mode,
         favorities: state.favorities,
         trip: state.trip,
-        bumpsmap: state.bumpsmap
+        bumps: state.bumps
     };
 };
 
 let navigatorId;
 let timerId;
+//let tim;
 
 const NAVIGATOR_OPTIONS = {
 	enableHighAccuracy: true,
@@ -62,7 +68,9 @@ class Body extends Component {
 		super(props);
 
 	    this.state = {
-	    	cover: false
+	    	cover: false,
+	    	isFetching: false
+	    	//temp: {bumps:[], path:[]}
 	    };
 
 	    this.mymap = React.createRef();
@@ -81,17 +89,21 @@ class Body extends Component {
 			}
 	   	}
 
-	   	//if (prevProps.mode.isGuidance !== this.props.mode.isGuidance) {
-		 //   	if (this.props.mode.isGuidance === true) {
-			// 	this.startGuidance();
-			// } else {
-			// 	this.stopGuidance();
-			// }
-	   	//}
+	   	if (prevProps.mode.isGuidance !== this.props.mode.isGuidance) {
+		   	if (this.props.mode.isGuidance === true) {
+				this.startGuidance();
+			} else {
+				this.stopGuidance();
+			}
+	   	}
 
 		if (prevProps.menu.isShareView !== this.props.menu.isShareView) {
 	   		if (this.props.menu.isShareView === true) this.saveSharedTripToDatabase();
 	   	}	
+
+	   	if (prevProps.menu.isBumpsMapView !== this.props.menu.isBumpsMapView) {
+	   		if (this.props.menu.isBumpsMapView === false) this.props.resetTrip();
+	   	}
 
 	   	if (prevProps.favorities !== this.props.favorities) {
 	   		localStorage.setItem('favorities', JSON.stringify(this.props.favorities));
@@ -104,19 +116,62 @@ class Body extends Component {
 
 	updateWindowDimensions = () => {
 	 	this.props.setDimentions({width: window.innerWidth, height: window.innerHeight})
+	 	this.props.setRatio({ ratio: window.innerWidth / window.innerHeight })
 	}
 
 	startRecording = () => {
 		this.props.resetTrip();
 
-		if (navigator && navigator.geolocation) { // обработка отсутствия
+		if (navigator && navigator.geolocation) { //комментировать при тестировании
 			navigatorId = navigator.geolocation.watchPosition(this.updateLocationData, this.err, NAVIGATOR_OPTIONS);
-	    }	
+	 	} else {
+	 		return new Error("Navigator error")
+	 	}	
 
-	    if (window.DeviceMotionEvent) { //обработка отсутствия
-	    		window.addEventListener("devicemotion", this.updateAccelerationData); 
-	    }
+	 	if (window.DeviceMotionEvent) { //комментировать при тестировании
+	 	 	window.addEventListener("devicemotion", this.updateAccelerationData); 
+	 	} else {
+	 		return new Error("Accelerator error")
+	 	}	
+
+	 	//testing.fakeCarMove(this.updateLocationData);
+	 	//testing.fakeBumps(this.props.addTripBumps);
+	 	//testing.fakeAcceleration(this.updateAccelerationData);
 	}
+
+	stopRecording = () => {
+		navigator.geolocation.clearWatch(navigatorId); //комментировать при тестировании
+		window.removeEventListener("devicemotion", this.updateAccelerationData); //комментировать при тестировании
+		
+		//this.saveBumpsToDatabase().then(() => this.getDatabaseBumpsCount()).then(bumpsCount => this.updateStatsInDatabase(bumpsCount));
+		this.updateFavoritiesData();
+		this.saveBumpsToDatabase();
+
+		//testing.stopCarMoveSimulation();
+		//testing.stopBumpsSimulation();
+		//testing.stopAccelerationSimulation();
+	}
+
+	startGuidance = () => {
+		this.props.resetTrip();
+
+		if (navigator && navigator.geolocation) { //комментировать при тестировании
+			navigatorId = navigator.geolocation.watchPosition(this.updateLocationData, this.err, NAVIGATOR_OPTIONS);
+	 	} else {
+	 		return new Error("Navigator error")
+	 	}	
+
+	 	//testing.fakeCarMove(this.updateLocationData);
+	}
+
+	stopGuidance = () => {
+		
+		navigator.geolocation.clearWatch(navigatorId); //комментировать при тестировании
+		window.removeEventListener("devicemotion", this.updateAccelerationData); //комментировать при тестировании
+
+		//testing.stopCarMoveSimulation();
+	}	
+
 
 	err = () => {
 		console.log("error");
@@ -127,9 +182,10 @@ class Body extends Component {
 	}
 
 	updateAccelerationData = (ev) => {
-		let { x, y, z } = ev.acceleration;
+		let { x, y, z } = ev.acceleration; //комментировать при тестировании
+		//let { x, y, z } = ev;
 		let { previousAcceleration, bumps } = this.props.trip;
-		let { lat, lng } = this.props.trip.currentLocation;
+		let { lat, lng, timestamp } = this.props.trip.currentLocation;
 
 		if (x !== null && y !== null && z !== null) {
 			let ax = x - previousAcceleration.x;
@@ -138,20 +194,14 @@ class Body extends Component {
 			let currentAcceleration = Math.pow((ax * ax + ay * ay + az * az), 1 / 3); //current level of acceleration with existing phone position
 			
 			if (currentAcceleration > 2.829226039) { //регулируемое значение
-				this.props.addTripBumps({
-					bumps: this.updateArrayIfPositionChanged(bumps, {lat, lng}), 
-					previousAcceleration: { x, y, z }
-				});
+				
+				if (bumps.length === 0 || !helpers.compare(bumps[bumps.length - 1], {lat, lng})) {
+					this.props.addTripBumps({lat, lng});
+				}
 
-				this.setState({cover: true})
-				timerId = setTimeout(this.animateBump, 800);
+				this.props.updateAcceleration({previousAcceleration: { x, y, z }})
 			}
 		}
-	}
-
-	animateBump = () => {
-		this.setState({cover: false})
-		clearTimeout(timerId);
 	}
 
 	updateSpeedValue = location	=> {
@@ -213,14 +263,6 @@ class Body extends Component {
 		});
 	}
 
-	stopRecording = () => {
-		navigator.geolocation.clearWatch(navigatorId);
-		window.removeEventListener("devicemotion", this.updateAccelerationData);
-		
-		this.saveBumpsToDatabase().then(() => this.getDatabaseBumpsCount()).then(bumpsCount => this.updateStatsInDatabase(bumpsCount));
-		this.updateFavoritiesData();
-	}
-
 	updateFavoritiesData = () => {
 		let { bumps, path, distance} = this.props.trip;
 		if (!path.length) return;
@@ -246,24 +288,18 @@ class Body extends Component {
 	}	
 
 	saveBumpsToDatabase = () => {
-		return new Promise((resolve, reject) => {
-			let bumpsRef = db.collection('bumpsmap').doc('bumps');
-			let count = 0;
-			this.props.trip.bumps.forEach(bump => 
-				bumpsRef.update({bumps: firebase.firestore.FieldValue.arrayUnion(bump)})
-				.then(() => count++)
-				.catch(error => reject(new Error('Bumps are not updated in database'))
-			))
+		let bumpsRef = db.collection('bumpsmap').doc('bumps');
+		//this.setState({isFetching: true});
 
-			if (count === this.props.trip.bumps.length) resolve('success')
-		});		
+		let newBumps = this.props.trip.bumps.filter(bump => !this.props.bumps.find(({ lat }) => bump.lat === lat) && !this.props.bumps.find(({ lng }) => bump.lng === lng));
+		//console.log(newBumps);
+
+		bumpsRef.get().then(doc => {if (doc.exists) bumpsRef.set({bumps: [...doc.data().bumps, ...newBumps]})}); //комментировать при тестировании
 	}
 
 	getDatabaseBumpsCount = () => {
-		return db.collection('bumpsmap').doc('bumps')
-		.get()
-		.then(doc => { 
-			if (doc.exists) return doc.data().bumps.length})
+		let bumpsRef = db.collection('bumpsmap').doc('bumps');
+		return bumpsRef.get().then(doc => {if ( doc.exists) return doc.data().bumps.length });
 	}
 
 	updateStatsInDatabase = bumpsCount => {
@@ -274,14 +310,16 @@ class Body extends Component {
 		    distanceTotal: firebase.firestore.FieldValue.increment(Math.round(this.props.trip.distance)),
 		    tripsCount: firebase.firestore.FieldValue.increment(1),
 		});
-	}	
+	}
+
+	
 
 	render() {
 		let { google, start, end } = this.props;
-		let { isFavoritiesListView, isShareView, isSelectedTripView, isCheckTripView } = this.props.menu;
+		let { isFavoritiesListView, isSelectedTripView, isCheckTripView } = this.props.menu;
 
 		if (isFavoritiesListView) return <FavoritiesList />
-		if (isShareView || isSelectedTripView) return <SelectedTripMap google={google} />
+		if (isSelectedTripView) return <SelectedTripMap google={google} />
 
 		if (isCheckTripView) {
 			return (
@@ -290,6 +328,7 @@ class Body extends Component {
 						centerAroundCurrentLocation
 						google={google}
 						updateLocationData={this.updateLocationData}
+						reportBumpAhead={this.props.reportBumpAhead}
 						start={start} 
 						end={end}>
 						<Car />
@@ -311,7 +350,6 @@ class Body extends Component {
 						strokeOpacity={0.8}
 						strokeWeight={4} />					
 				</BumpsMap>
-				<div className="map-bump-cover" style={{display: this.state.cover ? "flex": "none"}}/>
 			</div>
 		);
 	}

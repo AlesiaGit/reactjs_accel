@@ -55,11 +55,11 @@ class Car extends Component {
 		let speed = this.props.trip.currentLocation.speed;
 		let { angle, move } = this.props.trip;
 
-		if (map !== prevProps.map || (speed > 5 && (angle !== prevProps.angle || move > 5)) || isCurrentPositionReceived !== prevProps.isCurrentPositionReceived) {
+		if (map !== prevProps.map || isCurrentPositionReceived !== prevProps.isCurrentPositionReceived) {
 			this.renderMarker();
 		}
 
-		if (prevProps.trip.path !== this.props.trip.path && this.props.trip.path.length) {
+		if ((prevProps.trip.path !== this.props.trip.path && this.props.trip.path.length) && (speed > 5 && (angle !== prevProps.angle || move > 5))) {
 		 	this.renderMarker();
 		 }
 	}

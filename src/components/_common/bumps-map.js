@@ -30,7 +30,9 @@ class BumpsMap extends Component {
 			currentLocation: {lat, lng}, 
 			zoom: 17,
 			isCurrentPositionReceived: false,
-			temp: []
+			routeBumps: [],
+			bumpAhead: null,
+			distanceToBump: 0
 		};
 
 		this.mymap = React.createRef();
@@ -71,13 +73,15 @@ class BumpsMap extends Component {
 			this.setState({currentLocation: this.props.trip.currentLocation})
 		}
 
-		if (prevProps.trip.bumps !== this.props.trip.bumps) {
-			this.tripBumps = this.setBumpsOnMap(this.props.trip.bumps, this.tripBumps, "#fbad19", 0.8);
+		if ((prevProps.trip.currentLocation !== this.props.trip.currentLocation) && (this.state.isCurrentPositionReceived && this.props.mode.isGuidance)) {
+			this.recenterMap(this.props.trip.currentLocation);
+			this.setState({currentLocation: this.props.trip.currentLocation})
+			this.reportBumpAhead();
 		}
 
-		// if (prevProps.allBumps !== this.props.allBumps && !this.props.menu.isCheckTripView) {
-		// 	this.databaseBumps = this.setBumpsOnMap(this.props.allBumps, this.databaseBumps, "#e34929", 0.8);
-		// }
+		if (prevProps.trip.bumps !== this.props.trip.bumps) {
+			this.tripBumps = this.setBumpsOnMap(this.props.trip.bumps, this.tripBumps, '#fbad19', 1.2); //"#fbad19"
+		}
 
 		if (prevProps.bumps !== this.props.bumps && !this.props.menu.isCheckTripView) {
 			this.databaseBumps = this.setBumpsOnMap(this.props.bumps, this.databaseBumps, "#e34929", 0.8);
@@ -91,10 +95,23 @@ class BumpsMap extends Component {
 		}
 	}
 
-
+	reportBumpAhead = () => {
+		let { lat, lng } = this.props.trip.currentLocation;
+		let { bumpAhead, routeBumps } = this.state;
+		console.log(bumpAhead)
+		this.setState({
+			bumpAhead: helpers.getBumpAhead({lat, lng}, bumpAhead, routeBumps),
+			distanceToBump: (bumpAhead === null) ? 3 : helpers.getDistance(lat, lng, bumpAhead.lat, bumpAhead.lng)
+		}, () => { 
+			if (this.state.distanceToBump < 3) {
+				this.props.reportBumpAhead(true);
+			} else {
+				this.props.reportBumpAhead(false);
+			}
+		});
+	}
 
 	buildRoute = endpoints => {
-		console.log(endpoints)
 		let maps = this.props.google.maps;
 		this.directionsDisplay.setMap(this.map);
 
@@ -110,30 +127,14 @@ class BumpsMap extends Component {
 				let polyline = maps.geometry.encoding.decodePath(response.routes[0].overview_polyline);
 				polyline.forEach(i => directionArray.push({lat: i.lat(), lng: i.lng()}));
 
-				let result = helpers.getRouteBumps(directionArray, this.props.bumps);
-
-				this.databaseBumps = this.setBumpsOnMap(result, this.databaseBumps, "#e34929", 0.8);
-				this.directionsDisplay.setDirections(response);
+				this.setState({ routeBumps: helpers.getRouteBumps(directionArray, this.props.bumps) }, () => {
+					this.databaseBumps = this.setBumpsOnMap(this.state.routeBumps, this.databaseBumps, "#e34929", 0.8);
+					this.directionsDisplay.setDirections(response);
+					this.setState({ bumpAhead: this.state.routeBumps[0] })
+				})				
 			}
 		});
-	}
-
-	convertAddressToCoordinates = addresses => {
-		return new Promise ((resolve, reject) => {
-			let maps = this.props.google.maps;
-			let coords = [];
-			let geocoder = new maps.Geocoder();
-
-			for (var i = 0; i < addresses.length; i++) {
-				geocoder.geocode({'address': addresses[i]}, (results, status) => {
-					if (status !== 'OK') reject(new Error('Geocoder failed due to: ' + status));
-					
-					coords.push(results[0].geometry.location);
-					if (coords.length === addresses.length) resolve({start: coords[0], end: coords[1]});
-				});
-			}
-		});
-	}
+	}	
 
 	loadMap = () => {
 		if (this.props.google) {
@@ -165,7 +166,7 @@ class BumpsMap extends Component {
 
 			maps.event.trigger(this.map, 'ready');
 
-			if (this.map && !this.props.menu.isCheckTripView) { 
+			if (this.map && !this.props.menu.isCheckTripView) {
 				this.databaseBumps = this.setBumpsOnMap(this.props.bumps, this.databaseBumps, "#e34929", 0.8);
 			}
 		}
@@ -272,8 +273,8 @@ export default connect(mapStateToProps, mapDispatchToProps)(BumpsMap);
 BumpsMap.defaultProps = {
 	zoom: 16,
 	initialCenter: {
-		lat: 53.893009,
-		lng: 27.567444
+		lat: 53.9131642, //53.893009,
+		lng: 27.5141578 //27.567444
 	},
 	centerAroundCurrentLocation: false
 }

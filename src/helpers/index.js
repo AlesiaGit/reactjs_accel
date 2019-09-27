@@ -84,17 +84,36 @@ function getRouteBumps(directionArray, bumpsArray) {
 	let routeBumps = [];
 	directionArray.forEach((i, index) => {
     if (index < directionArray.length - 1) {
-        let routeSectionLength = getDistance(i.lat, i.lng, directionArray[index + 1].lat, directionArray[index + 1].lng);
+        let sectionLength = getDistance(i.lat, i.lng, directionArray[index + 1].lat, directionArray[index + 1].lng); //длина отрезка пути
 		
-		let startAndBump, endAndBump;
+		let distanceToSectionStart, distanceToSectionEnd;
 		bumpsArray.forEach(n => { 
-			startAndBump = getDistance(i.lat, i.lng, n.lat, n.lng);
-			endAndBump = getDistance(directionArray[index + 1].lat, directionArray[index + 1].lng, n.lat, n.lng);
-			if ((startAndBump + endAndBump) < routeSectionLength + 0.1) routeBumps.push({lat: n.lat, lng: n.lng}); //console.log("directionArray->", i, "bump->", n);
+			distanceToSectionStart = getDistance(i.lat, i.lng, n.lat, n.lng); //расстояние от начала отрезка до точки дефекта из базы
+			distanceToSectionEnd = getDistance(directionArray[index + 1].lat, directionArray[index + 1].lng, n.lat, n.lng); //расстояние от конца отрезка до точки дефекта из базы
+			if ((distanceToSectionStart + distanceToSectionEnd) < sectionLength + 10) routeBumps.push({lat: n.lat, lng: n.lng}); //в сантиметрах
+			//console.log("distanceToSectionStart->", distanceToSectionStart, "distanceToSectionEnd->", distanceToSectionEnd, "sectionLength->", sectionLength);
         })
     }});
 
     return routeBumps;
 }
 
-export { camelize, compare, toRad, getDistance, getAngle, getZoom, getCenter, getBounds, getRouteBumps };
+function getBumpAhead(coords, bumpAhead, bumpsArray) {
+
+	let closestBump = bumpAhead;
+	let shortestDistance = getDistance(coords.lat, coords.lng, bumpAhead.lat, bumpAhead.lng);
+	bumpsArray.forEach(bump => { 
+		console.log(coords)
+		let distance = getDistance(coords.lat, coords.lng, bump.lat, bump.lng);
+		closestBump = (distance < shortestDistance) ? bump : closestBump; //координаты ближайшего дефекта
+		shortestDistance = (distance < shortestDistance) ? distance : shortestDistance; //расстояние до ближайшего дефекта
+    })
+
+    return closestBump;
+
+	// console.log(coords,bumpAhead, closestBump)
+ //    if (!compare(bumpAhead, closestBump)) return closestBump;
+ //    return bumpAhead;
+}
+
+export { camelize, compare, toRad, getDistance, getAngle, getZoom, getCenter, getBounds, getRouteBumps, getBumpAhead };

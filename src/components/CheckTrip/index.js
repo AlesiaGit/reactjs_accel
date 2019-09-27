@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import '../../styles/check-trip.css';
 import { HeaderMenu, Drawer, NextStepButton, Body } from '../_common/index';
 import SearchMenu from './search-menu';
+import Warning from './warning';
 import { connect } from "react-redux";
 
 import * as menu from "../../ducks/menu-state";
@@ -33,7 +34,8 @@ class CheckTrip extends Component {
 
 	    this.state = {
 	    	start: "",
-	    	end: ""
+	    	end: "",
+	    	isBumpAhead: false
 	    };
 	}
 
@@ -44,9 +46,8 @@ class CheckTrip extends Component {
 	}
 
 	preventResize = () => {
-		let { width, height } = this.props.dom;
-		let ratio = width / height;
-		let newHeight = window.innerHeight * ratio;
+		let { width, height, ratio } = this.props.dom;
+		let newHeight = window.innerWidth / ratio;
 		document.querySelector("meta[name=viewport]")
         .setAttribute("content", `width=device-width, height=${newHeight}, user-scalable=no, initial-scale=1.0, maximum-scale=1.0`);
     }
@@ -77,6 +78,10 @@ class CheckTrip extends Component {
 		this.setState({ [item]: "" });
 	}
 
+	reportBumpAhead = status => {
+		this.setState({isBumpAhead: status});
+	}
+
 	render() {
 		let { start, end } = this.state;
 		let coverDisplay = this.props.menu.isDrawerView ? "block" : "none";
@@ -99,12 +104,13 @@ class CheckTrip extends Component {
 							style={{display: searchButtonDisplay}} 
 							onClick={this.onSearchButtonToggle} />
 					</div>
-					<Body start={start} end={end} />
+					<Body start={start} end={end} reportBumpAhead={this.reportBumpAhead} />
 					<NextStepButton 
 						color={color} 
 						toggleButton={this.onNextStepButtonToggle}
 						text={text}	/>	
 				</div>
+				<Warning display={this.state.isBumpAhead} />
 				<div className="cover" style={{display: coverDisplay}}>
 					<div className="cover-background" onClick={this.onLeftMenuToggle}  />
 					<Drawer />

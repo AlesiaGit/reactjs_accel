@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
-import { db } from '../Firebase/index';
+import { db } from '../../helpers/firebase';
 import { connect } from "react-redux";
 
 import '../../styles/shared-trip.css';
-import { Body, Slider } from '../_common/index';
+import { Body } from '../_common/index';
+import Slider from './slider';
 
 import * as selectedTrip from "../../ducks/selected-trip";
 import * as menu from "../../ducks/menu-state";

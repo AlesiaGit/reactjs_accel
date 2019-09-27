@@ -6,7 +6,6 @@ import BumpsMap from '../_common/bumps-map';
 import Car from '../_common/car';
 import Drawer from '../_common/drawer';
 import SelectedTripMap from '../_common/selected-trip-map';
-import Slider from '../_common/slider';
 
 export { 
 	NextStepButton, 
@@ -16,5 +15,4 @@ export {
 	Body, 
 	BumpsMap, 
 	Car,
-	SelectedTripMap,
-	Slider };
+	SelectedTripMap };

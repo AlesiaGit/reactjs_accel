@@ -6,6 +6,7 @@ import mode from './mode';
 import favorities from './favorities';
 import dom from './dom';
 import bumps from './bumps-map';
+import stats from './stats';
 
 const reducers = {
   selectedTrip: selectedTrip,
@@ -14,7 +15,8 @@ const reducers = {
   mode: mode,
   favorities: favorities,
   dom: dom,
-  bumps: bumps
+  bumps: bumps,
+  stats: stats,
 };
 
 export default combineReducers(reducers);
