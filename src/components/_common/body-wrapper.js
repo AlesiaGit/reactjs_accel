@@ -134,8 +134,8 @@ class Body extends Component {
 	 		return new Error("Accelerator error")
 	 	}	
 
-	 	//testing.fakeCarMove(this.updateLocationData);
-	 	//testing.fakeBumps(this.props.addTripBumps);
+	 	// testing.fakeCarMove(this.updateLocationData);
+	 	// testing.fakeBumps(this.props.addTripBumps);
 	 	//testing.fakeAcceleration(this.updateAccelerationData);
 	}
 
@@ -147,8 +147,8 @@ class Body extends Component {
 		this.updateFavoritiesData();
 		this.saveBumpsToDatabase();
 
-		//testing.stopCarMoveSimulation();
-		//testing.stopBumpsSimulation();
+		// testing.stopCarMoveSimulation();
+		// testing.stopBumpsSimulation();
 		//testing.stopAccelerationSimulation();
 	}
 
@@ -165,7 +165,6 @@ class Body extends Component {
 	}
 
 	stopGuidance = () => {
-		
 		navigator.geolocation.clearWatch(navigatorId); //комментировать при тестировании
 		window.removeEventListener("devicemotion", this.updateAccelerationData); //комментировать при тестировании
 

@@ -86,7 +86,7 @@ class SharedTrip extends Component {
 		let trip = this.props.selectedTrip;
 		let { isDataReceived, isStatsView, stats, tripQuality } = this.state;
 
-		if (isDataReceived === false) return <div>Retrieving data from database</div>
+		if (isDataReceived === false) return null; //<div>Retrieving data from database</div>
 
 		let bumpsCount = trip.bumps.length;
 		let distance = trip.distance;

@@ -55,6 +55,7 @@ class BumpsMap extends Component {
 			}
 		}
 
+		//this.setState({	isCurrentPositionReceived: true });
 		this.loadMap();
 
 	}
@@ -273,8 +274,8 @@ export default connect(mapStateToProps, mapDispatchToProps)(BumpsMap);
 BumpsMap.defaultProps = {
 	zoom: 16,
 	initialCenter: {
-		lat: 53.9131642, //53.893009,
-		lng: 27.5141578 //27.567444
+		lat: 53.9123223, //53.9131642, //53.893009,
+		lng: 27.5140232 //27.5141578 //27.567444
 	},
 	centerAroundCurrentLocation: false
 }

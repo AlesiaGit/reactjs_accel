@@ -76,7 +76,7 @@ class App extends Component {
 	}
 
 	render() {
-		if (this.state.isFetching) return (<div>Loading</div>);
+		if (this.state.isFetching) return null; //(<div>Loading</div>);
 	    return (
 		    <HashRouter history={customHistory} >
 		       	<Route exact path="/" component={Start} />
