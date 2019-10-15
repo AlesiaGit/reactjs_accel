@@ -1,23 +1,27 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "9b3d0c655cf6eb59ae0c1fde6f56b8c1",
+    "revision": "ffb660bd228cf024cc15c8a00b5f5e51",
     "url": "/reactjs_accel/index.html"
   },
   {
-    "revision": "3503c06d4531156082ad",
-    "url": "/reactjs_accel/static/css/main.616defd2.chunk.css"
+    "revision": "4991faab38ba83212ceb",
+    "url": "/reactjs_accel/static/css/main.824c2611.chunk.css"
   },
   {
     "revision": "a4a46c2326597243cdde",
     "url": "/reactjs_accel/static/js/2.bfefdb9d.chunk.js"
   },
   {
-    "revision": "3503c06d4531156082ad",
-    "url": "/reactjs_accel/static/js/main.9b9b34c0.chunk.js"
+    "revision": "4991faab38ba83212ceb",
+    "url": "/reactjs_accel/static/js/main.976fd832.chunk.js"
   },
   {
     "revision": "1e61c4af176a06cbe2f2",
     "url": "/reactjs_accel/static/js/runtime~main.dd179d6e.js"
+  },
+  {
+    "revision": "734e5a726f37f261ff8a0d96260612a0",
+    "url": "/reactjs_accel/static/media/HWYGOTH.734e5a72.TTF"
   },
   {
     "revision": "3b46a15c6e4e10408d212ba360d1915b",
